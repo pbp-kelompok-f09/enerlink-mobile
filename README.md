@@ -21,52 +21,52 @@ Enerlink menggunakan berbagai modul sebagai (CRUD) untuk menunjang penggunaan ap
 
 1. User Dashboard:
 
-C: Membuat authentication page
-R: Melihat dashboard berisi informasi tentang informasi user, jadwal kegiatan, daftar komunitas yang diikuti.
-U: Pengguna dapat mengedit profil
-D: menghapus kegiatan ataupun keluar dari komunitas. Jika keluar dari komunitas maka kegiatan yang diikuti di komunitas tersebut akan keluar
+- C: Membuat authentication page
+- R: Melihat dashboard berisi informasi tentang informasi user, jadwal kegiatan, daftar komunitas yang diikuti.
+- U: Pengguna dapat mengedit profil
+- D: menghapus kegiatan ataupun keluar dari komunitas. Jika keluar dari komunitas maka kegiatan yang diikuti di komunitas tersebut akan keluar
 
 2. Community Page:
 
-C: Pengguna dapat membuat komunitas baru sesuai minat atau kegiatan tertentu, seperti komunitas olahraga, musik, atau hobi lainnya.
-R: Pengguna dapat melihat daftar komunitas yang tersedia beserta kegiatan yang sedang atau akan berlangsung di dalam komunitas tersebut.
-U: Admin komunitas dapat memperbarui kategori, deskripsi komunitas, dan juga mengubah jadwal kegiatan yang diadakan oleh komunitas.
-D: Admin komunitas memiliki hak untuk mengeluarkan anggota (user) dari komunitas atau menghapus komunitas secara keseluruhan jika diperlukan.
+- C: Pengguna dapat membuat komunitas baru sesuai minat atau kegiatan tertentu, seperti komunitas olahraga, musik, atau hobi lainnya.
+- R: Pengguna dapat melihat daftar komunitas yang tersedia beserta kegiatan yang sedang atau akan berlangsung di dalam komunitas tersebut.
+- U: Admin komunitas dapat memperbarui kategori, deskripsi komunitas, dan juga mengubah jadwal kegiatan yang diadakan oleh komunitas.
+- D: Admin komunitas memiliki hak untuk mengeluarkan anggota (user) dari komunitas atau menghapus komunitas secara keseluruhan jika diperlukan.
 
 3. Create Venue:
 
-C: Admin dapat membuat atau menambahkan venue baru ke dalam sistem. Misalnya, menambahkan gedung olahraga baru beserta fasilitas dan harganya.
-R: Admin dan pengguna dapat melihat detail venue, seperti rating, deskripsi, harga sewa, lokasi, dan kontak pengelola.
-U: Admin dapat mengubah atau memperbarui informasi venue, misalnya mengganti harga atau memperbarui deskripsi
-D: Admin dapat menghapus venue yang sudah tidak tersedia atau tidak ingin ditampilkan lagi di sistem.
+- C: Admin dapat membuat atau menambahkan venue baru ke dalam sistem. Misalnya, menambahkan gedung olahraga baru beserta fasilitas dan harganya.
+- R: Admin dan pengguna dapat melihat detail venue, seperti rating, deskripsi, harga sewa, lokasi, dan kontak pengelola.
+- U: Admin dapat mengubah atau memperbarui informasi venue, misalnya mengganti harga atau memperbarui deskripsi
+- D: Admin dapat menghapus venue yang sudah tidak tersedia atau tidak ingin ditampilkan lagi di sistem.
 
 4. Create Event
 
-C: Admin komunitas dapat membuat kegiatan-kegiatan yang ada
-R: anggota komunitas dapat melihat apa saja kegiatan yang terdapat di dalamnya dan bisa join
-U: Admin komunitas dapat melakukan edit jadwal, deskripsi pada kegiatan yang akan dibuat
-D: Admin komunitas dapat delete kegiatan
+- C: Admin komunitas dapat membuat kegiatan-kegiatan yang ada
+- R: anggota komunitas dapat melihat apa saja kegiatan yang terdapat di dalamnya dan bisa join
+- U: Admin komunitas dapat melakukan edit jadwal, deskripsi pada kegiatan yang akan dibuat
+- D: Admin komunitas dapat delete kegiatan
 
 5. Admin Dashboard
 
-C: Menambahkan pengguna baru ke sistem, Membuat komunitas baru untuk ditampilkan di platform.
-R: Melihat daftar pengguna yang terdaftar, Menampilkan daftar komunitas yang tersedia, Menampilkan daftar venue yang dapat digunakan.
-U: Mengubah data pengguna (seperti status, informasi akun, atau komunitas yang diikuti), Mengedit detail komunitas (nama, deskripsi, dsb), Memperbarui informasi venue (nama, harga, atau lokasi).
-D: Menghapus pengguna dari daftar, Menghapus komunitas dari sistem, Menghapus venue
+- C: Menambahkan pengguna baru ke sistem, Membuat komunitas baru untuk ditampilkan di platform.
+- R: Melihat daftar pengguna yang terdaftar, Menampilkan daftar komunitas yang tersedia, Menampilkan daftar venue yang dapat digunakan.
+- U: Mengubah data pengguna (seperti status, informasi akun, atau komunitas yang diikuti), Mengedit detail komunitas (nama, deskripsi, dsb), Memperbarui informasi venue (nama, harga, atau lokasi).
+- D: Menghapus pengguna dari daftar, Menghapus komunitas dari sistem, Menghapus venue
 
 6. Sewa Venue
 
-C: Pengguna dapat melakukan pemesanan atau sewa venue untuk sesi atau tanggal tertentu.
-R: Pengguna dapat melihat detail venue yang ingin disewa, termasuk informasi ketersediaan dan harga.
-U: Pengguna dapat mengubah jadwal atau tanggal sewa jika ada perubahan rencana.
-D: Pengguna dapat membatalkan penyewaan (cancel booking) sebelum waktu sewa dimulai.
+- C: Pengguna dapat melakukan pemesanan atau sewa venue untuk sesi atau tanggal tertentu.
+- R: Pengguna dapat melihat detail venue yang ingin disewa, termasuk informasi ketersediaan dan harga.
+- U: Pengguna dapat mengubah jadwal atau tanggal sewa jika ada perubahan rencana.
+- D: Pengguna dapat membatalkan penyewaan (cancel booking) sebelum waktu sewa dimulai.
 
 7. Forum Komunitas
 
-C: Membuat post baru di forum dengan mengisi judul, isi konten, dan kategori/topik yang relevan, Menambahkan elemen pendukung, seperti gambar, tautan, atau tag untuk memperjelas isi postingan.
-R: Melihat daftar semua postingan di forum, biasanya diurutkan berdasarkan waktu, popularitas, atau kategori, Membuka satu postingan untuk membaca isi lengkapnya beserta komentar, Melihat informasi tambahan, seperti nama pembuat, tanggal posting, jumlah komentar, dan jumlah like.
-U: Mengedit judul, isi, tag, atau kategori postingan, Melihat preview sebelum menyimpan perubahan.
-D: Menghapus postingan jika merasa sudah tidak relevan atau ingin menariknya dari publik, Setelah dihapus, postingan akan hilang dari tampilan forum
+- C: Membuat post baru di forum dengan mengisi judul, isi konten, dan kategori/topik yang relevan, Menambahkan elemen pendukung, seperti gambar, tautan, atau tag untuk memperjelas isi postingan.
+- R: Melihat daftar semua postingan di forum, biasanya diurutkan berdasarkan waktu, popularitas, atau kategori, Membuka satu postingan untuk membaca isi lengkapnya beserta komentar, Melihat informasi tambahan, seperti nama pembuat, tanggal posting, jumlah komentar, dan jumlah like.
+- U: Mengedit judul, isi, tag, atau kategori postingan, Melihat preview sebelum menyimpan perubahan.
+- D: Menghapus postingan jika merasa sudah tidak relevan atau ingin menariknya dari publik, Setelah dihapus, postingan akan hilang dari tampilan forum
 
 ## 👤 User Persona
 1. Pengguna (User):
