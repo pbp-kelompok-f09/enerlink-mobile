@@ -96,6 +96,7 @@
 2. Menggunakan dotenv library dari Flutter untuk mengambil link backend dari .env
 3. Di Flutter akan melakukan request dan menerima response dari endpoint yang dituju
 4. Diagram:
+```
 Flutter   
   ↓  
 Pacil Web Service  
@@ -104,5 +105,6 @@ HTTP Request
   ↓  
 Django Framework  
   ↓  
-Database Postgres
+Database Postg
+```res
 
