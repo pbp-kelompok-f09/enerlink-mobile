@@ -108,3 +108,7 @@ Django Framework
 Database Postgres
 ```
 
+## Link 
+- Alur Sheets: https://docs.google.com/spreadsheets/d/1zH-FyHCWx9a6bBGQ5zgjocIm-GUWxTVqYs0H9DE2wIo/edit?gid=0#gid=0
+- PWS: https://vazha-khayri-enerlink.pbp.cs.ui.ac.id/
+
