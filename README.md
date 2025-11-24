@@ -105,6 +105,6 @@ HTTP Request
   ↓  
 Django Framework  
   ↓  
-Database Postg
-```res
+Database Postgres
+```
 
