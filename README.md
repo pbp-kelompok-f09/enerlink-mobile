@@ -97,7 +97,7 @@ https://docs.google.com/spreadsheets/d/1rV8Sp1PiZAfMyHpalQdoNSx9PKFwjRpR3l188N2c
 * Membuat high-fidelity awal masing-masing modul di Figma.
 * Finalisasi pembagian modul sesuai WBS.
 
-### Kegiatan Per Orang (lebih detail)
+### Kegiatan Per Orang 
 
 * **Hanif (Dashboard):** Mendesain komponen profil, kartu jadwal kegiatan, kartu komunitas; menentukan icon, layout, dan warna.
 * **Mahesa (Community):** Mendesain halaman list komunitas, detail komunitas, dan form create komunitas.
