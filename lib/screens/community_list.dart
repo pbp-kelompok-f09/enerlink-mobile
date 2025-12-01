@@ -1,5 +1,5 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:enerlink_mobile/models/community.dart';
 import 'package:enerlink_mobile/widgets/community_card.dart';
@@ -16,7 +16,7 @@ class _CommunityListPageState extends State<CommunityListPage> {
     // URL to the Django backend API
     // Use 10.0.2.2 for Android Emulator to access localhost
     // Use your machine's LAN IP for physical devices
-    const String url = 'http://127.0.0.1:8000/community/json/';
+    String url = '${dotenv.env["BACKEND_URL"]}/community/json/';
 
     try {
       final response = await http.get(Uri.parse(url));

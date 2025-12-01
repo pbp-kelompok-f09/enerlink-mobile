@@ -33,6 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: 'Forum',
         icon: Icons.forum_rounded,
       ), // Index 4
+      const PlaceholderPage(title: 'User Dashboard', icon: Icons.person),
     ];
   }
 
@@ -51,7 +52,6 @@ class _MyHomePageState extends State<MyHomePage> {
       // This is the "Body" that changes based on bottom nav selection
       body: _pages[_selectedIndex],
 
-      // THE FIXED BOTTOM NAVIGATION BAR
       bottomNavigationBar: BottomNavbar(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
@@ -121,7 +121,7 @@ class HomeContent extends StatelessWidget {
                 const SizedBox(height: 30),
                 // Welcome Text
                 const Text(
-                  'Welcome Back,',
+                  'Welcome [User Name],',
                   style: TextStyle(color: Colors.white70, fontSize: 18),
                 ),
                 const SizedBox(height: 8),

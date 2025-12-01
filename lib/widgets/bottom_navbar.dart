@@ -36,6 +36,7 @@ class BottomNavbar extends StatelessWidget {
             icon: Icon(Icons.stadium_rounded),
             label: 'Venues',
           ),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Account'),
         ],
         currentIndex: selectedIndex,
         selectedItemColor: const Color(
