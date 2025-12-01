@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:enerlink_mobile/widgets/custom_bottom_nav_bar.dart'; // New import
+import 'package:enerlink_mobile/widgets/bottom_navbar.dart';
+import 'package:enerlink_mobile/screens/community_list.dart'; // New import for CommunityListPage
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -19,18 +20,15 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     _pages = [
       const HomeContent(), // Index 0: Home (The Dashboard)
-      const PlaceholderPage(
-        title: 'Communities',
-        icon: Icons.groups_rounded,
-      ), // Index 1
+      const CommunityListPage(), // Index 1: Real Community List
       const PlaceholderPage(
         title: 'Venues',
         icon: Icons.stadium_rounded,
       ), // Index 2
       const PlaceholderPage(
-        title: 'Events',
-        icon: Icons.emoji_events_rounded,
-      ), // Index 3
+        title: "Event",
+        icon: Icons.stadium_rounded,
+      ), // Index 3: Assuming EventListPage should be here
       const PlaceholderPage(
         title: 'Forum',
         icon: Icons.forum_rounded,
@@ -54,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: _pages[_selectedIndex],
 
       // THE FIXED BOTTOM NAVIGATION BAR
-      bottomNavigationBar: CustomBottomNavBar(
+      bottomNavigationBar: BottomNavbar(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
       ),
