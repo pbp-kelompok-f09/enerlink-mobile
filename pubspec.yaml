@@ -39,7 +39,7 @@ dependencies:
   pbp_django_auth: ^0.4.0
   
   # Local Storage
-  shared_preferences: ^2.2.2
+  shared_preferences: ^2.2.3
   
   # UI & Utilities
   intl: ^0.19.0
@@ -48,6 +48,8 @@ dependencies:
   
   # Icons
   cupertino_icons: ^1.0.6
+
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:
@@ -72,7 +74,10 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
+  assets:
+    - lib/assets/images/noProfile.jpg
+    - lib/assets/images/enerlink.png
+    - lib/assets/images/blackBlueEnerlink.png
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
