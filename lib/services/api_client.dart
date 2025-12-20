@@ -1,15 +1,16 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http_parser/http_parser.dart';
 
 class ApiClient {
+  static http.Client client = http.Client();
+
   static String get baseUrl {
-    if (kIsWeb) return 'http://localhost:8000';
-    return 'http://10.0.2.2:8000';
+    return dotenv.env['BACKEND_URL'] ?? 'http://localhost:8000';
   }
 
   static const String tokenKey = 'auth_token';
@@ -53,7 +54,7 @@ class ApiClient {
       final uri = Uri.parse('$baseUrl/api/auth/login/');
       print('🔄 Login request to: $uri');
       
-      final resp = await http.post(
+      final resp = await client.post(
         uri,
         headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
         body: jsonEncode({'username': username, 'password': password}),
@@ -86,7 +87,7 @@ class ApiClient {
       final uri = Uri.parse('$baseUrl/api/auth/register/');
       print('🔄 Register request to: $uri');
 
-      final resp = await http.post(
+      final resp = await client.post(
         uri,
         headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
         body: jsonEncode({
@@ -118,7 +119,7 @@ class ApiClient {
     try {
       final headers = await getAuthHeaders();
       final uri = Uri.parse('$baseUrl/api/auth/logout/');
-      await http.post(uri, headers: headers).timeout(timeout);
+      await client.post(uri, headers: headers).timeout(timeout);
     } catch (_) {}
     await clearSession();
   }
@@ -130,7 +131,7 @@ class ApiClient {
       final uri = Uri.parse('$baseUrl/api/dashboard/');
       print('🔄 Dashboard request to: $uri');
 
-      final resp = await http.get(uri, headers: headers).timeout(timeout);
+      final resp = await client.get(uri, headers: headers).timeout(timeout);
 
       print('✅ Dashboard response: ${resp.statusCode}');
 
@@ -225,7 +226,7 @@ class ApiClient {
       }
 
       print('🚀 Sending request...');
-      final streamed = await req.send().timeout(timeout);
+      final streamed = await client.send(req).timeout(timeout);
       final response = await http.Response.fromStream(streamed);
       
       print('✅ Status: ${response.statusCode}');
@@ -246,7 +247,7 @@ class ApiClient {
       final uri = Uri.parse('$baseUrl/api/wallet/topup/');
       print('🔄 Top up wallet: $amount');
 
-      final resp = await http.post(
+      final resp = await client.post(
         uri,
         headers: headers,
         body: jsonEncode({'amount': amount}),
@@ -265,7 +266,7 @@ class ApiClient {
     try {
       final headers = await getAuthHeaders();
       final uri = Uri.parse('$baseUrl/api/event/$eventId/leave/');
-      final resp = await http.post(uri, headers: headers).timeout(timeout);
+      final resp = await client.post(uri, headers: headers).timeout(timeout);
       return resp.statusCode == 200;
     } catch (e) {
       print('❌ Cancel event error: $e');
@@ -278,7 +279,7 @@ class ApiClient {
     try {
       final headers = await getAuthHeaders();
       final uri = Uri.parse('$baseUrl/api/community/$communityId/leave/');
-      final resp = await http.post(uri, headers: headers).timeout(timeout);
+      final resp = await client.post(uri, headers: headers).timeout(timeout);
       return resp.statusCode == 200;
     } catch (e) {
       print('❌ Leave community error: $e');

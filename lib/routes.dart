@@ -32,7 +32,7 @@ class EnerlinkMobileRouter {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/': // Home (landing)
-        return MaterialPageRoute(builder: (_) => const MainScreenMobile());
+        return MaterialPageRoute(builder: (_) => MainScreenMobile());
       case '/community': // placeholder
         return MaterialPageRoute(builder: (_) => const _EmptyScreen(title: 'Community', note: 'TODO: Community belum tersedia'));
       case '/venues': // placeholder

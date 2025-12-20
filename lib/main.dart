@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'routes.dart';
 
-void main() {
+Future<void> main() async {
+  await dotenv.load(fileName: ".env");
   runApp(const EnerlinkApp());
 }
 
@@ -26,8 +28,6 @@ class EnerlinkApp extends StatelessWidget {
           onSecondary: Colors.black,
           error: Colors.red,
           onError: Colors.white,
-          background: Color(0xFF0EA5E9),
-          onBackground: Colors.white,
           surface: Colors.white,
           onSurface: Color(0xFF111827),
         ),
@@ -47,8 +47,8 @@ class EnerlinkApp extends StatelessWidget {
         navigationBarTheme: const NavigationBarThemeData(
           backgroundColor: Color(0xFF0EA5E9),
           indicatorColor: Color(0x33FFFFFF),
-          labelTextStyle: MaterialStatePropertyAll(TextStyle(color: Colors.white)),
-          iconTheme: MaterialStatePropertyAll(IconThemeData(color: Colors.white)),
+          labelTextStyle: WidgetStatePropertyAll(TextStyle(color: Colors.white)),
+          iconTheme: WidgetStatePropertyAll(IconThemeData(color: Colors.white)),
         ),
       ),
       initialRoute: '/',

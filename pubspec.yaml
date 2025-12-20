@@ -56,6 +56,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  mockito: ^5.4.4
+  build_runner: ^2.4.8
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -76,9 +78,6 @@ flutter:
 
   assets:
     - .env
-
-  # To add assets to your application, add an assets section, like this:
-  assets:
     - lib/assets/images/noProfile.jpg
     - lib/assets/images/enerlink.png
     - lib/assets/images/blackBlueEnerlink.png

@@ -102,7 +102,7 @@ class AuthService {
   // Logout
   static Future<Map<String, dynamic>> logout() async {
     try {
-      final response = await ApiService.post(
+      await ApiService.post(
         endpoint: ApiConstants.logoutEndpoint,
         body: {},
         includeAuth: true,

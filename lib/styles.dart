@@ -14,9 +14,9 @@ class EnerlinkStyles {
 
   // Panel info (notifikasi) semi-transparent
   static BoxDecoration infoPanel = BoxDecoration(
-    color: Colors.white.withOpacity(0.12),
+    color: Colors.white.withValues(alpha: 0.12),
     borderRadius: BorderRadius.circular(18),
-    border: Border.all(color: Colors.white.withOpacity(0.25)),
+    border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
   );
 
   // Tile biru (Communities, Forum)

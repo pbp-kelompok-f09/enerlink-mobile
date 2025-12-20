@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:image_picker/image_picker.dart';
 import '../services/api_client.dart';
 
@@ -196,26 +195,6 @@ class _ProfileScreenMobileState extends State<ProfileScreenMobile> {
     } finally {
       if (mounted) setState(() => _saving = false);
     }
-  }
-
-  ImageProvider _getProfileImage() {
-    // Priority 1: Newly picked image
-    if (_pickedBytes != null && _pickedBytes!.isNotEmpty) {
-      print('📷 Using picked bytes for preview');
-      return MemoryImage(_pickedBytes!);
-    }
-    
-    // Priority 2: Existing avatar from server
-    if (_avatarUrl != null && _avatarUrl!.isNotEmpty && _avatarUrl != 'null') {
-      String imageUrl = _avatarUrl!;
-      if (!imageUrl.startsWith('http')) {
-        imageUrl = '${ApiClient.baseUrl}$imageUrl';
-      }
-      return NetworkImage(imageUrl);
-    }
-    
-    // Priority 3: Default
-    return const AssetImage('lib/assets/images/noProfile.jpg');
   }
 
   @override

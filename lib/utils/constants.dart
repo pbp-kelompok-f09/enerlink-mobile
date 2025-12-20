@@ -1,12 +1,8 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ApiConstants {
   static String get baseUrl {
-    if (kIsWeb) {
-      return 'http://localhost:8000';
-    } else {
-      return 'http://10.0.2.2:8000';
-    }
+    return dotenv.env['BACKEND_URL'] ?? 'http://localhost:8000';
   }
   
   // Auth Endpoints

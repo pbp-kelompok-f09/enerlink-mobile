@@ -52,6 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (confirm == true && mounted) {
       await AuthService.logout();
+      if (!mounted) return;
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const LoginScreenMobile()),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../widgets/bottom_bar.dart';
 import '../../styles.dart';
 import '../../services/api_client.dart';
 
@@ -26,7 +25,6 @@ class _UserDashboardScreenMobileState extends State<UserDashboardScreenMobile> {
   late int year;
   late int month;
 
-  int bottomIndex = 3;
   bool _loading = true;
 
   @override
@@ -288,16 +286,6 @@ class _UserDashboardScreenMobileState extends State<UserDashboardScreenMobile> {
     }
 
     return Scaffold(
-      bottomNavigationBar: MobileBottomNav(
-        currentIndex: bottomIndex,
-        onTap: (i) {
-          setState(() => bottomIndex = i);
-          if (i == 0) Navigator.pushReplacementNamed(context, '/');
-          if (i == 1) Navigator.pushNamed(context, '/community');
-          if (i == 2) Navigator.pushNamed(context, '/venues');
-          if (i == 3) {/* already here */}
-        },
-      ),
       body: Container(
         decoration: const BoxDecoration(gradient: EnerlinkStyles.bgGradient),
         child: SafeArea(
