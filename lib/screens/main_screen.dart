@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:enerlink_mobile/widgets/bottom_navbar.dart';
 import 'package:enerlink_mobile/screens/community_list.dart';
-import 'package:enerlink_mobile/screens/dashboard/user_dashboard_screen.dart';
 import 'package:enerlink_mobile/services/auth_service.dart';
 import 'package:enerlink_mobile/models/user.dart';
+import 'package:enerlink_mobile/screens/dashboard/user_dashboard_screen.dart';
 
 class MainScreenMobile extends StatefulWidget {
-  const MainScreenMobile({super.key});
+  final int initialIndex;
+  const MainScreenMobile({super.key, this.initialIndex = 0});
 
   @override
   State<MainScreenMobile> createState() => _MainScreenMobileState();
 }
 
 class _MainScreenMobileState extends State<MainScreenMobile> {
-  int _selectedIndex = 0;
+  late int _selectedIndex;
 
   // List of pages to switch between
   late final List<Widget> _pages;
@@ -21,6 +22,7 @@ class _MainScreenMobileState extends State<MainScreenMobile> {
   @override
   void initState() {
     super.initState();
+    _selectedIndex = widget.initialIndex;
     _pages = [
       const HomeContent(), // Index 0: Home
       const CommunityListPage(), // Index 1: Community

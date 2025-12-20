@@ -36,7 +36,7 @@ class _LoginScreenMobileState extends State<LoginScreenMobile> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['success'] == true || data['token'] != null) {
-          Navigator.pushReplacementNamed(context, '/dashboard');
+          Navigator.pushReplacementNamed(context, '/');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
