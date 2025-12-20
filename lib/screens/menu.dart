@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:enerlink_mobile/widgets/bottom_navbar.dart';
 import 'package:enerlink_mobile/screens/community_list.dart'; // New import for CommunityListPage
+import 'package:enerlink_mobile/screens/venue_list.dart'; // New import for VenueListPage
+import 'package:enerlink_mobile/screens/booking_list.dart'; // New import for BookingListPage
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -21,19 +23,8 @@ class _MyHomePageState extends State<MyHomePage> {
     _pages = [
       const HomeContent(), // Index 0: Home (The Dashboard)
       const CommunityListPage(), // Index 1: Real Community List
-      const PlaceholderPage(
-        title: 'Venues',
-        icon: Icons.stadium_rounded,
-      ), // Index 2
-      const PlaceholderPage(
-        title: "Event",
-        icon: Icons.stadium_rounded,
-      ), // Index 3: Assuming EventListPage should be here
-      const PlaceholderPage(
-        title: 'Forum',
-        icon: Icons.forum_rounded,
-      ), // Index 4
-      const PlaceholderPage(title: 'User Dashboard', icon: Icons.person),
+      const VenueListPage(), // Index 2: Venue List
+      const BookingListPage(), // Index 3: Booking List (User Account/Dashboard)
     ];
   }
 
