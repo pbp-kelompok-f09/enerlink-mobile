@@ -44,6 +44,7 @@ class ApiClient {
     };
     if (token != null) {
       headers['Authorization'] = 'Bearer $token';
+      headers['Cookie'] = 'sessionid=$token';
     }
     return headers;
   }
