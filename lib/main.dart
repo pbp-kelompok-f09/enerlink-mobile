@@ -1,42 +1,58 @@
 import 'package:flutter/material.dart';
-import 'package:enerlink_mobile/screens/menu.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'routes.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
-  runApp(const MyApp());
+void main() {
+  runApp(const EnerlinkApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class EnerlinkApp extends StatelessWidget {
+  const EnerlinkApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    const primaryBlue = Color(0xFF2563EB);
+    const yellow = Color(0xFFFACC15);
+
     return MaterialApp(
       title: 'Enerlink',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSwatch(
-          primarySwatch: Colors.blue,
-        ).copyWith(secondary: Colors.blueAccent[400]),
+        useMaterial3: true,
+        colorScheme: const ColorScheme(
+          brightness: Brightness.light,
+          primary: primaryBlue,
+          onPrimary: Colors.white,
+          secondary: yellow,
+          onSecondary: Colors.black,
+          error: Colors.red,
+          onError: Colors.white,
+          background: Color(0xFF0EA5E9),
+          onBackground: Colors.white,
+          surface: Colors.white,
+          onSurface: Color(0xFF111827),
+        ),
+        scaffoldBackgroundColor: const Color(0xFF0EA5E9),
+        textTheme: const TextTheme(
+          headlineMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: Colors.white),
+          titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
+          bodyMedium: TextStyle(fontSize: 14, color: Colors.white),
+        ),
+        // FIX: CardThemeData (not CardTheme)
+        cardTheme: const CardThemeData(
+          color: Colors.white,
+          elevation: 8,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
+          shadowColor: Color(0x26000000), // ~15% black
+        ),
+        navigationBarTheme: const NavigationBarThemeData(
+          backgroundColor: Color(0xFF0EA5E9),
+          indicatorColor: Color(0x33FFFFFF),
+          labelTextStyle: MaterialStatePropertyAll(TextStyle(color: Colors.white)),
+          iconTheme: MaterialStatePropertyAll(IconThemeData(color: Colors.white)),
+        ),
       ),
-      home: const MyHomePage(),
+      initialRoute: '/',
+      onGenerateRoute: EnerlinkMobileRouter.onGenerateRoute,
     );
   }
 }
