@@ -15,7 +15,7 @@ class _CommunityListPageState extends State<CommunityListPage> {
   Future<List<Community>> _loadCommunities() async {
     // URL to the Django backend API
     // Use your machine's LAN IP for physical devices
-    String url = '${dotenv.env["BACKEND_URL"]}/community/json/';
+    String url = "${dotenv.env['BACKEND_URL']}/api/communities/";
 
     try {
       final response = await http.get(Uri.parse(url));

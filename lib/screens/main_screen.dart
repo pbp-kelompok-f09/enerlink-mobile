@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:enerlink_mobile/widgets/bottom_navbar.dart';
 import 'package:enerlink_mobile/screens/community_list.dart';
-import 'package:enerlink_mobile/screens/dashboard/user_dashboard_screen.dart';
+import 'package:enerlink_mobile/screens/venue_list.dart'; // From Venue branch
 import 'package:enerlink_mobile/services/auth_service.dart';
 import 'package:enerlink_mobile/models/user.dart';
+import 'package:enerlink_mobile/screens/dashboard/user_dashboard_screen.dart'; // From Dev branch
 
 class MainScreenMobile extends StatefulWidget {
-  const MainScreenMobile({super.key});
+  final int initialIndex;
+  const MainScreenMobile({super.key, this.initialIndex = 0});
 
   @override
   State<MainScreenMobile> createState() => _MainScreenMobileState();
 }
 
 class _MainScreenMobileState extends State<MainScreenMobile> {
-  int _selectedIndex = 0;
+  late int _selectedIndex;
 
   // List of pages to switch between
   late final List<Widget> _pages;
@@ -21,11 +23,13 @@ class _MainScreenMobileState extends State<MainScreenMobile> {
   @override
   void initState() {
     super.initState();
+    _selectedIndex = widget.initialIndex;
     _pages = [
-      const HomeContent(), // Index 0: Home
-      const CommunityListPage(), // Index 1: Community
-      const PlaceholderPage(title: 'Venues', icon: Icons.stadium_rounded), // Index 2: Venues
-      const UserDashboardScreenMobile(), // Index 3: Account (User Dashboard)
+      const HomeContent(), // Index 0: Home (The Dashboard)
+      const CommunityListPage(), // Index 1: Community List
+      const VenueListPage(), // Index 2: Venue List (From Venue Branch)
+      const UserDashboardScreenMobile(), // Index 3: User Dashboard (From Dev Branch)
+      const PlaceholderPage(title: 'Forum', icon: Icons.forum_rounded), // Index 4: Forum (Placeholder)
     ];
   }
 
@@ -184,7 +188,7 @@ class _HomeContentState extends State<HomeContent> {
                           const Icon(Icons.search, color: Colors.white70),
                           const SizedBox(width: 12),
                           Text(
-                            'Find venues, communities...',
+                            'Find venues, communities...', 
                             style: TextStyle(
                               color: Colors.white.withAlpha(
                                 (255 * 0.7).round(),
@@ -253,7 +257,7 @@ class _HomeContentState extends State<HomeContent> {
                       color2: const Color(0xFFFBC02D),
                       textColor: Colors.black87,
                       onTap: () {
-                        // Switch to Events Tab (Index 3)
+                        // Switch to User Dashboard Tab (Index 3) where Events are shown
                         final state = context
                             .findAncestorStateOfType<_MainScreenMobileState>();
                         state?._onItemTapped(3);
@@ -338,7 +342,8 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   Widget _buildFeatureCard(
-    BuildContext context, {
+    BuildContext context,
+    {
     required String title,
     required IconData icon,
     required Color color1,
