@@ -3,7 +3,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
 import '../models/venue.dart';
 import '../services/venue_service.dart';
+import '../services/api_client.dart';
 import 'booking_form.dart';
+import 'package:enerlink_mobile/screens/auth/login_screen.dart';
 
 class VenueDetailPage extends StatefulWidget {
   final String venueId;
@@ -315,15 +317,46 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => BookingFormPage(venueId: venue.idVenue),
-                                ),
-                              ).then((_) {
-                                // Refresh if needed
-                              });
+                            onPressed: () async {
+                              final isLoggedIn = await ApiClient.isLoggedIn();
+                              if (isLoggedIn) {
+                                if (context.mounted) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => BookingFormPage(venueId: venue.idVenue),
+                                    ),
+                                  ).then((_) {
+                                    // Refresh if needed
+                                  });
+                                }
+                              } else {
+                                if (context.mounted) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: const Text('Login Required'),
+                                      content: const Text('You need to login to book a venue.'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(context),
+                                          child: const Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(builder: (context) => const LoginScreenMobile()),
+                                            );
+                                          },
+                                          child: const Text('Login'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF0D47A1),

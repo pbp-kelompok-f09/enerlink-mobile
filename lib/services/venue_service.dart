@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/venue.dart';
 import '../models/booking.dart';
+import 'api_client.dart'; // Import ApiClient for headers
 
 class VenueService {
   static String get baseUrl => "${dotenv.env['BACKEND_URL']}/rent-venue/api";
@@ -73,8 +74,9 @@ class VenueService {
   static Future<BookingResponse> getBookings() async {
     try {
       String url = "$baseUrl/bookings/";
+      final headers = await ApiClient.getAuthHeaders(); // Add Auth headers
 
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(url), headers: headers);
 
       if (response.statusCode == 200) {
         return BookingResponse.fromJson(json.decode(response.body));
@@ -94,8 +96,9 @@ class VenueService {
   static Future<Booking> getBookingDetail(String bookingId) async {
     try {
       String url = "$baseUrl/bookings/$bookingId/";
+      final headers = await ApiClient.getAuthHeaders();
 
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(url), headers: headers);
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
@@ -125,6 +128,7 @@ class VenueService {
   }) async {
     try {
       String url = "$baseUrl/book/$venueId/";
+      final headers = await ApiClient.getAuthHeaders();
 
       final body = json.encode({
         'booking_date': bookingDate,
@@ -134,9 +138,7 @@ class VenueService {
 
       final response = await http.post(
         Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: headers, // Use Auth headers
         body: body,
       );
 
@@ -163,6 +165,7 @@ class VenueService {
   }) async {
     try {
       String url = "$baseUrl/bookings/$bookingId/update/";
+      final headers = await ApiClient.getAuthHeaders();
 
       final body = json.encode({
         'booking_date': bookingDate,
@@ -172,9 +175,7 @@ class VenueService {
 
       final response = await http.put(
         Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: headers,
         body: body,
       );
 
@@ -196,8 +197,9 @@ class VenueService {
   static Future<void> cancelBooking(String bookingId) async {
     try {
       String url = "$baseUrl/bookings/$bookingId/cancel/";
+      final headers = await ApiClient.getAuthHeaders();
 
-      final response = await http.delete(Uri.parse(url));
+      final response = await http.delete(Uri.parse(url), headers: headers);
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
