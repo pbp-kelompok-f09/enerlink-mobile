@@ -1,0 +1,44 @@
+<svg 
+viewBox="0 0 420 120" xmlns="http://www.w3.org/2000/svg">
+
+  <defs>
+    <!-- Gradient petir -->
+    <linearGradient id="lightningGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFD000"/>
+      <stop offset="100%" stop-color="#FF8000"/>
+    </linearGradient>
+
+    <!-- Efek cahaya petir -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Tulisan "enerl" -->
+  <text x="20" y="80"
+        font-family="Roboto"
+        font-weight="600"
+        font-size="64"
+        fill="#FFFFFF">
+    enerl
+  </text>
+
+  <!-- Petir: menggantikan huruf "i" (posisi mirip contoh sebelumnya) -->
+  <g transform="translate(210, 18)" filter="url(#glow)">
+    <polygon points="10,0 0,32 9,32 0,70 22,35 12,35 22,0"
+             fill="url(#lightningGradient)" />
+  </g>
+
+  <!-- "nk" langsung menempel ke petir -->
+  <text x="230" y="80"
+        font-family="Roboto"
+        font-weight="600"
+        font-size="64"
+        fill="#FFFFFF">
+    nk
+  </text>
+</svg>

@@ -14,7 +14,6 @@ class CommunityListPage extends StatefulWidget {
 class _CommunityListPageState extends State<CommunityListPage> {
   Future<List<Community>> _loadCommunities() async {
     // URL to the Django backend API
-    // Use 10.0.2.2 for Android Emulator to access localhost
     // Use your machine's LAN IP for physical devices
     String url = "${dotenv.env['BACKEND_URL']}/api/communities/";
 

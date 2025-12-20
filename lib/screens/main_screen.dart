@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:enerlink_mobile/widgets/bottom_navbar.dart';
-import 'package:enerlink_mobile/screens/community_list.dart'; // New import for CommunityListPage
-import 'package:enerlink_mobile/screens/venue_list.dart'; // New import for VenueListPage
-import 'package:enerlink_mobile/screens/booking_list.dart'; // New import for BookingListPage
+import 'package:enerlink_mobile/screens/community_list.dart';
+import 'package:enerlink_mobile/screens/venue_list.dart'; // From Venue branch
+import 'package:enerlink_mobile/services/auth_service.dart';
+import 'package:enerlink_mobile/models/user.dart';
+import 'package:enerlink_mobile/screens/dashboard/user_dashboard_screen.dart'; // From Dev branch
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class MainScreenMobile extends StatefulWidget {
+  final int initialIndex;
+  const MainScreenMobile({super.key, this.initialIndex = 0});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MainScreenMobile> createState() => _MainScreenMobileState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 0;
+class _MainScreenMobileState extends State<MainScreenMobile> {
+  late int _selectedIndex;
 
   // List of pages to switch between
   late final List<Widget> _pages;
@@ -20,11 +23,13 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    _selectedIndex = widget.initialIndex;
     _pages = [
       const HomeContent(), // Index 0: Home (The Dashboard)
-      const CommunityListPage(), // Index 1: Real Community List
-      const VenueListPage(), // Index 2: Venue List
-      const BookingListPage(), // Index 3: Booking List (User Account/Dashboard)
+      const CommunityListPage(), // Index 1: Community List
+      const VenueListPage(), // Index 2: Venue List (From Venue Branch)
+      const UserDashboardScreenMobile(), // Index 3: User Dashboard (From Dev Branch)
+      const PlaceholderPage(title: 'Forum', icon: Icons.forum_rounded), // Index 4: Forum (Placeholder)
     ];
   }
 
@@ -54,11 +59,36 @@ class _MyHomePageState extends State<MyHomePage> {
 // --- WIDGETS FOR PAGES ---
 
 // 1. The Main Home Dashboard (Refactored from previous code)
-class HomeContent extends StatelessWidget {
+class HomeContent extends StatefulWidget {
   const HomeContent({super.key});
 
   @override
+  State<HomeContent> createState() => _HomeContentState();
+}
+
+class _HomeContentState extends State<HomeContent> {
+  User? _currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    final user = await AuthService.getCurrentUser();
+    if (mounted) {
+      setState(() {
+        _currentUser = user;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // Get display name or default
+    final displayName = _currentUser?.firstName ?? _currentUser?.username ?? 'Guest';
+
     return Stack(
       children: [
         // 1. Background Gradient & Shapes
@@ -110,10 +140,11 @@ class HomeContent extends StatelessWidget {
               children: [
                 // SizedBox to push content down a bit, compensating for removed AppBar
                 const SizedBox(height: 30),
+                
                 // Welcome Text
-                const Text(
-                  'Welcome [User Name],',
-                  style: TextStyle(color: Colors.white70, fontSize: 18),
+                Text(
+                  'Welcome $displayName,',
+                  style: const TextStyle(color: Colors.white70, fontSize: 18),
                 ),
                 const SizedBox(height: 8),
                 const Text(
@@ -157,7 +188,7 @@ class HomeContent extends StatelessWidget {
                           const Icon(Icons.search, color: Colors.white70),
                           const SizedBox(width: 12),
                           Text(
-                            'Find venues, communities...',
+                            'Find venues, communities...', 
                             style: TextStyle(
                               color: Colors.white.withAlpha(
                                 (255 * 0.7).round(),
@@ -200,7 +231,7 @@ class HomeContent extends StatelessWidget {
                       onTap: () {
                         // Switch to Communities Tab (Index 1)
                         final state = context
-                            .findAncestorStateOfType<_MyHomePageState>();
+                            .findAncestorStateOfType<_MainScreenMobileState>();
                         state?._onItemTapped(1);
                       },
                     ),
@@ -214,7 +245,7 @@ class HomeContent extends StatelessWidget {
                       onTap: () {
                         // Switch to Venues Tab (Index 2)
                         final state = context
-                            .findAncestorStateOfType<_MyHomePageState>();
+                            .findAncestorStateOfType<_MainScreenMobileState>();
                         state?._onItemTapped(2);
                       },
                     ),
@@ -226,9 +257,9 @@ class HomeContent extends StatelessWidget {
                       color2: const Color(0xFFFBC02D),
                       textColor: Colors.black87,
                       onTap: () {
-                        // Switch to Events Tab (Index 3)
+                        // Switch to User Dashboard Tab (Index 3) where Events are shown
                         final state = context
-                            .findAncestorStateOfType<_MyHomePageState>();
+                            .findAncestorStateOfType<_MainScreenMobileState>();
                         state?._onItemTapped(3);
                       },
                     ),
@@ -241,7 +272,7 @@ class HomeContent extends StatelessWidget {
                       onTap: () {
                         // Switch to Forum Tab (Index 4)
                         final state = context
-                            .findAncestorStateOfType<_MyHomePageState>();
+                            .findAncestorStateOfType<_MainScreenMobileState>();
                         state?._onItemTapped(4);
                       },
                     ),
@@ -311,7 +342,8 @@ class HomeContent extends StatelessWidget {
   }
 
   Widget _buildFeatureCard(
-    BuildContext context, {
+    BuildContext context,
+    {
     required String title,
     required IconData icon,
     required Color color1,
