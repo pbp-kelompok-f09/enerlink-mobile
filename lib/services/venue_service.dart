@@ -120,14 +120,18 @@ class VenueService {
   }
 
   // Create booking
-  static Future<BookingResponse> createBooking({
-    required String venueId,
-    required String bookingDate,
-    required String startTime,
-    required String endTime,
+  static Future<Map<String, dynamic>> createBooking({
+  required String venueId,
+  required String bookingDate,
+  required String startTime,
+  required String endTime,
   }) async {
     try {
       String url = "$baseUrl/book/$venueId/";
+
+      print('🔍 Venue ID: $venueId');
+      print('🔍 Full URL: $url');  // Debug: lihat URL lengkap
+
       final headers = await ApiClient.getAuthHeaders();
 
       final body = json.encode({
@@ -136,22 +140,51 @@ class VenueService {
         'end_time': endTime,
       });
 
+      print('🔍 Creating booking...');
+      print('🔍 URL: $url');
+      print('🔍 Body: $body');
+
       final response = await http.post(
         Uri.parse(url),
-        headers: headers, // Use Auth headers
+        headers: headers,
         body: body,
       );
 
-      final jsonData = json.decode(response.body);
+      print('🔍 Response status: ${response.statusCode}');
+      print('🔍 Response body: ${response.body}');
 
-      if (response.statusCode == 201) {
-        return BookingResponse.fromJson(jsonData);
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        // 🔧 TAMBAHKAN: Cek apakah body kosong atau null
+        if (response.body.isEmpty) {
+          return {'status': 'success', 'message': 'Booking created'};
+        }
+        
+        final decoded = json.decode(response.body);
+        
+        // 🔧 TAMBAHKAN: Cek apakah decoded null
+        if (decoded == null) {
+          return {'status': 'success', 'message': 'Booking created'};
+        }
+        
+        return decoded as Map<String, dynamic>;
+      } else if (response.statusCode == 401) {
+        throw Exception('Please login first to book a venue.');
       } else {
-        throw Exception(
-          jsonData['message'] ?? 'Failed to create booking. Status code: ${response.statusCode}',
-        );
+        // 🔧 TAMBAHKAN: Handle error response dengan aman
+        if (response.body.isNotEmpty) {
+          try {
+            final errorData = json.decode(response.body);
+            if (errorData != null && errorData is Map) {
+              throw Exception(errorData['message'] ?? 'Failed to create booking');
+            }
+          } catch (_) {
+            // JSON parse failed
+          }
+        }
+        throw Exception('Failed to create booking. Status: ${response.statusCode}');
       }
     } catch (e) {
+      print('❌ Create booking error: $e');
       throw Exception('Error creating booking: $e');
     }
   }

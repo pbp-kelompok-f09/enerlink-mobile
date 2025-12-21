@@ -21,6 +21,7 @@ class _UserDashboardScreenMobileState extends State<UserDashboardScreenMobile> {
   List<Map<String, dynamic>> recentActivities = [];
   List<Map<String, dynamic>> userEvents = [];
   List<Map<String, dynamic>> communities = [];
+  List<Map<String, dynamic>> bookings = [];
 
   late List<Map<String, dynamic>> calendarDays;
   late String currentMonth;
@@ -69,6 +70,7 @@ class _UserDashboardScreenMobileState extends State<UserDashboardScreenMobile> {
         recentActivities = List<Map<String, dynamic>>.from(data['recent_activities'] ?? []);
         userEvents = List<Map<String, dynamic>>.from(data['user_events'] ?? []);
         communities = List<Map<String, dynamic>>.from(data['communities'] ?? []);
+        bookings = List<Map<String, dynamic>>.from(data['bookings'] ?? []);
         calendarDays = _generateCalendar(year, month, DateTime.now());
         _loading = false;
       });
