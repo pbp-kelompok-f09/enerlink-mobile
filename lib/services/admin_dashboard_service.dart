@@ -21,7 +21,8 @@ class AdminDashboardService {
 
   // 2. Fungsi Ambil Daftar User (Ini yang tadi ERROR karena belum ada)
   Future<List<AdminUser>> fetchUsers(CookieRequest request) async {
-    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/users/';
+    final String url =
+        'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/admin-dashboard/api/users/';
 
     final response = await request.get(url);
 
@@ -51,7 +52,8 @@ class AdminDashboardService {
 
   // --- VENUE SERVICES ---
   Future<List<AdminVenue>> fetchVenues(CookieRequest request) async {
-    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/venues/';
+    final String url =
+        'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/admin-dashboard/api/venues/';
     final response = await request.get(url);
     List<AdminVenue> list = [];
     for (var d in response) {
@@ -62,7 +64,7 @@ class AdminDashboardService {
 
   Future<bool> deleteVenue(CookieRequest request, String venueId) async {
     final String url =
-        '${ApiClient.baseUrl}/admin-dashboard/api/venues/delete/$venueId/';
+        'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/admin-dashboard/api/venues/delete/$venueId/';
     try {
       final response = await request.post(url, {});
       return response['status'] == 'success';
@@ -73,7 +75,8 @@ class AdminDashboardService {
 
   // --- COMMUNITY SERVICES ---
   Future<List<AdminCommunity>> fetchCommunities(CookieRequest request) async {
-    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/communities/';
+    final String url =
+        'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/admin-dashboard/api/communities/';
     final response = await request.get(url);
     List<AdminCommunity> list = [];
     for (var d in response) {
@@ -87,7 +90,7 @@ class AdminDashboardService {
     String communityId,
   ) async {
     final String url =
-        '${ApiClient.baseUrl}/admin-dashboard/api/communities/delete/$communityId/';
+        'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/admin-dashboard/api/communities/delete/$communityId/';
     try {
       final response = await request.post(url, {});
       return response['status'] == 'success';
@@ -106,7 +109,8 @@ class AdminDashboardService {
     List<int>? imageBytes,
     String? filename,
   }) async {
-    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/venues/add/';
+    final String url =
+        'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/admin-dashboard/api/venues/add/';
     return _sendMultipartRequest(request, url, data, imageBytes, filename);
   }
 
@@ -119,7 +123,7 @@ class AdminDashboardService {
     String? filename,
   }) async {
     final String url =
-        '${ApiClient.baseUrl}/admin-dashboard/api/venues/edit/$venueId/';
+        'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/admin-dashboard/api/venues/edit/$venueId/';
     return _sendMultipartRequest(request, url, data, imageBytes, filename);
   }
 
@@ -176,7 +180,7 @@ class AdminDashboardService {
     Map<String, dynamic> data,
   ) async {
     final String url =
-        '${ApiClient.baseUrl}/admin-dashboard/api/communities/add/';
+        'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/admin-dashboard/api/communities/add/';
     try {
       final response = await request.post(url, data);
       return response['status'] == 'success';
@@ -192,7 +196,7 @@ class AdminDashboardService {
     Map<String, dynamic> data,
   ) async {
     final String url =
-        '${ApiClient.baseUrl}/admin-dashboard/api/communities/edit/$id/';
+        'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/admin-dashboard/api/communities/edit/$id/';
     try {
       final response = await request.post(url, data);
       return response['status'] == 'success';
@@ -211,7 +215,7 @@ class AdminDashboardService {
   }) async {
     // Sesuaikan URL dengan punyamu (misal: https://vazha-khayri-enerlink.pbp.cs.ui.ac.id/admin-dashboard/api/users/edit/$id/)
     final String url =
-        '${ApiClient.baseUrl}/admin-dashboard/api/users/edit/$id/';
+        'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/admin-dashboard/api/users/edit/$id/';
     return _sendMultipartRequest(request, url, data, imageBytes, filename);
   }
 
@@ -224,7 +228,8 @@ class AdminDashboardService {
     List<int>? imageBytes,
     String? filename,
   }) async {
-    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/users/add/';
+    final String url =
+        'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/admin-dashboard/api/users/add/';
     // Gunakan helper _sendMultipartRequest yang sudah kita buat sebelumnya
     return _sendMultipartRequest(request, url, data, imageBytes, filename);
   }
@@ -236,7 +241,8 @@ class AdminDashboardService {
     List<int>? imageBytes,
     String? filename,
   }) async {
-    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/venues/add/';
+    final String url =
+        'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/admin-dashboard/api/venues/add/';
     return _sendMultipartRequest(request, url, data, imageBytes, filename);
   }
 
@@ -249,7 +255,7 @@ class AdminDashboardService {
   }) async {
     // URL Endpoint
     final String url =
-        '${ApiClient.baseUrl}/admin-dashboard/api/users/update/$userId/';
+        'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/admin-dashboard/api/users/update/$userId/';
 
     // Karena pbp_django_auth mungkin belum support full multipart dengan mudah,
     // Kita bisa gunakan pendekatan hybrid atau request manual jika perlu.
