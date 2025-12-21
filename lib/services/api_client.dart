@@ -42,9 +42,12 @@ class ApiClient {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
     };
-    if (token != null) {
+    if (token != null && token.isNotEmpty) {
       headers['Authorization'] = 'Bearer $token';
       headers['Cookie'] = 'sessionid=$token';
+      print('🔑 Auth header added with token: ${token.substring(0, 8)}...');
+    } else {
+      print('⚠️ No token found when creating auth headers');
     }
     return headers;
   }
@@ -62,11 +65,48 @@ class ApiClient {
       ).timeout(timeout);
 
       print('✅ Login response: ${resp.statusCode}');
+      print('📦 Response body: ${resp.body}');
 
       if (resp.statusCode == 200) {
-        final data = jsonDecode(resp.body);
-        if (data['token'] != null) {
-          await saveToken(data['token']);
+        try {
+          final data = jsonDecode(resp.body);
+          
+          // Try different possible token field names
+          String? token;
+          if (data['token'] != null) {
+            token = data['token'].toString();
+          } else if (data['access_token'] != null) {
+            token = data['access_token'].toString();
+          } else if (data['accessToken'] != null) {
+            token = data['accessToken'].toString();
+          }
+          
+          // If no token in body, try to extract from cookies
+          if (token == null || token.isEmpty) {
+            final cookies = resp.headers['set-cookie'];
+            if (cookies != null && cookies.isNotEmpty) {
+              // Try to extract sessionid or token from cookie
+              final cookieParts = cookies.split(';');
+              for (final part in cookieParts) {
+                if (part.trim().startsWith('sessionid=')) {
+                  token = part.split('=')[1].trim();
+                  break;
+                } else if (part.trim().startsWith('token=')) {
+                  token = part.split('=')[1].trim();
+                  break;
+                }
+              }
+            }
+          }
+          
+          if (token != null && token.isNotEmpty) {
+            await saveToken(token);
+            print('✅ Token saved successfully');
+          } else {
+            print('⚠️ No token found in response body or cookies');
+          }
+        } catch (e) {
+          print('❌ Error parsing login response: $e');
         }
       }
       return resp;

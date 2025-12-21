@@ -1,12 +1,41 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/venue.dart';
 import '../models/booking.dart';
 import 'api_client.dart'; // Import ApiClient for headers
 
 class VenueService {
   static String get baseUrl => "${dotenv.env['BACKEND_URL']}/rent-venue/api";
+  
+  // Helper method to get auth headers with fallback to session cookie
+  static Future<Map<String, String>> _getAuthHeaders() async {
+    final headers = <String, String>{
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+    
+    final prefs = await SharedPreferences.getInstance();
+    
+    // Try to get token first
+    final token = await ApiClient.getToken();
+    if (token != null && token.isNotEmpty) {
+      // Try both Bearer token and Cookie with sessionid
+      headers['Authorization'] = 'Bearer $token';
+      headers['Cookie'] = 'sessionid=$token';
+      return headers;
+    }
+    
+    // Fallback to session cookie
+    final sessionCookie = prefs.getString('session_cookie');
+    if (sessionCookie != null && sessionCookie.isNotEmpty) {
+      headers['Cookie'] = sessionCookie;
+      return headers;
+    }
+    
+    return headers;
+  }
 
   // Get all venues
   static Future<VenueResponse> getVenues({
@@ -74,20 +103,65 @@ class VenueService {
   static Future<BookingResponse> getBookings() async {
     try {
       String url = "$baseUrl/bookings/";
-      final headers = await ApiClient.getAuthHeaders(); // Add Auth headers
+      final headers = await _getAuthHeaders();
 
       final response = await http.get(Uri.parse(url), headers: headers);
 
       if (response.statusCode == 200) {
-        return BookingResponse.fromJson(json.decode(response.body));
+        final responseBody = response.body;
+        if (responseBody.isEmpty) {
+          throw Exception('Empty response from server');
+        }
+        
+        dynamic decodedResponse;
+        try {
+          decodedResponse = json.decode(responseBody);
+        } catch (e) {
+          throw Exception('Failed to decode JSON response: $e');
+        }
+        
+        // Handle both direct array and object with data field
+        if (decodedResponse is List) {
+          // If response is directly a list
+          try {
+            return BookingResponse(
+              status: 'success',
+              dataList: List<Booking>.from(
+                decodedResponse.map((x) {
+                  if (x is Map<String, dynamic>) {
+                    return Booking.fromJson(x);
+                  } else {
+                    throw Exception('Invalid booking item format: ${x.runtimeType}');
+                  }
+                })
+              ),
+              count: decodedResponse.length,
+            );
+          } catch (e) {
+            throw Exception('Error parsing booking list: $e');
+          }
+        } else if (decodedResponse is Map<String, dynamic>) {
+          // If response is an object with status and data
+          return BookingResponse.fromJson(decodedResponse);
+        } else {
+          throw Exception('Invalid response format from server: ${decodedResponse.runtimeType}');
+        }
       } else if (response.statusCode == 401) {
         throw Exception('Authentication required. Please login first.');
       } else {
-        throw Exception(
-          'Failed to load bookings. Status code: ${response.statusCode}',
-        );
+        try {
+          final errorBody = json.decode(response.body);
+          throw Exception(
+            errorBody['message'] ?? 'Failed to load bookings. Status code: ${response.statusCode}',
+          );
+        } catch (_) {
+          throw Exception('Failed to load bookings. Status code: ${response.statusCode}');
+        }
       }
     } catch (e) {
+      if (e.toString().contains('Authentication required')) {
+        rethrow;
+      }
       throw Exception('Error connecting to backend: $e');
     }
   }
@@ -96,7 +170,7 @@ class VenueService {
   static Future<Booking> getBookingDetail(String bookingId) async {
     try {
       String url = "$baseUrl/bookings/$bookingId/";
-      final headers = await ApiClient.getAuthHeaders();
+      final headers = await _getAuthHeaders();
 
       final response = await http.get(Uri.parse(url), headers: headers);
 
@@ -128,7 +202,7 @@ class VenueService {
   }) async {
     try {
       String url = "$baseUrl/book/$venueId/";
-      final headers = await ApiClient.getAuthHeaders();
+      final headers = await _getAuthHeaders();
 
       final body = json.encode({
         'booking_date': bookingDate,
@@ -138,20 +212,35 @@ class VenueService {
 
       final response = await http.post(
         Uri.parse(url),
-        headers: headers, // Use Auth headers
+        headers: headers,
         body: body,
       );
 
-      final jsonData = json.decode(response.body);
+      // Check if response body is empty
+      if (response.body.isEmpty) {
+        throw Exception('Empty response from server');
+      }
+
+      Map<String, dynamic> jsonData;
+      try {
+        jsonData = json.decode(response.body) as Map<String, dynamic>;
+      } catch (e) {
+        throw Exception('Invalid JSON response: ${response.body}');
+      }
 
       if (response.statusCode == 201) {
         return BookingResponse.fromJson(jsonData);
+      } else if (response.statusCode == 401) {
+        throw Exception('Authentication required. Please login again.');
       } else {
         throw Exception(
-          jsonData['message'] ?? 'Failed to create booking. Status code: ${response.statusCode}',
+          jsonData['message'] ?? jsonData['error'] ?? 'Failed to create booking. Status code: ${response.statusCode}',
         );
       }
     } catch (e) {
+      if (e.toString().contains('Authentication required')) {
+        rethrow;
+      }
       throw Exception('Error creating booking: $e');
     }
   }
@@ -165,7 +254,7 @@ class VenueService {
   }) async {
     try {
       String url = "$baseUrl/bookings/$bookingId/update/";
-      final headers = await ApiClient.getAuthHeaders();
+      final headers = await _getAuthHeaders();
 
       final body = json.encode({
         'booking_date': bookingDate,
@@ -197,7 +286,7 @@ class VenueService {
   static Future<void> cancelBooking(String bookingId) async {
     try {
       String url = "$baseUrl/bookings/$bookingId/cancel/";
-      final headers = await ApiClient.getAuthHeaders();
+      final headers = await _getAuthHeaders();
 
       final response = await http.delete(Uri.parse(url), headers: headers);
 

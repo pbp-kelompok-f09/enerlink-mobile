@@ -139,184 +139,249 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                         // Title and Rating
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
-                              child: Text(
-                                venue.name,
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF0D47A1),
-                                ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    venue.name,
+                                    style: const TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF0D47A1),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  // Category tag
+                                  if (venue.category.isNotEmpty)
+                                    Wrap(
+                                      spacing: 8,
+                                      children: venue.category.take(1).map((cat) {
+                                        return Chip(
+                                          label: Text(
+                                            cat,
+                                            style: const TextStyle(fontSize: 12),
+                                          ),
+                                          backgroundColor: Colors.blue[100],
+                                          padding: EdgeInsets.zero,
+                                        );
+                                      }).toList(),
+                                    ),
+                                ],
                               ),
                             ),
-                            Row(
+                            // Rating
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                const Icon(Icons.star, color: Colors.amber, size: 24),
-                                const SizedBox(width: 4),
-                                Text(
-                                  venue.rating.toStringAsFixed(1),
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(Icons.star, color: Colors.amber, size: 28),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      venue.rating.toStringAsFixed(2),
+                                      style: const TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                const Text(
+                                  'Rating',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
                                   ),
                                 ),
                               ],
                             ),
                           ],
                         ),
-                        const SizedBox(height: 16),
-                        // Price
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.green[50],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.attach_money, color: Colors.green),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Rp ${venue.sessionPrice.toStringAsFixed(0)}/hour',
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        // Address
-                        if (venue.address.isNotEmpty) ...[
-                          Row(
-                            children: [
-                              const Icon(Icons.location_on, color: Colors.grey),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  venue.address,
-                                  style: TextStyle(color: Colors.grey[700]),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                        ],
-                        // Contact
-                        Row(
-                          children: [
-                            const Icon(Icons.phone, color: Colors.grey),
-                            const SizedBox(width: 8),
-                            Text(
-                              venue.contactPerson,
-                              style: TextStyle(color: Colors.grey[700]),
-                            ),
-                          ],
-                        ),
                         const SizedBox(height: 24),
-                        // Description
+                        
+                        // Description Section
                         const Text(
                           'Description',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
+                            color: Color(0xFF0D47A1),
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           venue.description,
-                          style: TextStyle(color: Colors.grey[700], height: 1.5),
+                          style: TextStyle(
+                            color: Colors.grey[700],
+                            height: 1.5,
+                            fontSize: 14,
+                          ),
                         ),
                         const SizedBox(height: 24),
-                        // Categories
-                        if (venue.category.isNotEmpty) ...[
+                        
+                        // Contact Person Section
+                        const Text(
+                          'Contact Person:',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            const Icon(Icons.phone, color: Colors.grey, size: 20),
+                            const SizedBox(width: 8),
+                            Text(
+                              venue.contactPerson,
+                              style: TextStyle(
+                                color: Colors.grey[700],
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        
+                        // Location Section
+                        if (venue.address.isNotEmpty) ...[
                           const Text(
-                            'Categories',
+                            'Location:',
                             style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87,
                             ),
                           ),
                           const SizedBox(height: 8),
-                          Wrap(
-                            spacing: 8,
-                            children: venue.category.map((cat) {
-                              return Chip(
-                                label: Text(cat),
-                                backgroundColor: Colors.blue[50],
-                              );
-                            }).toList(),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Icon(Icons.location_on, color: Colors.red, size: 20),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  venue.address,
+                                  style: TextStyle(
+                                    color: Colors.grey[700],
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 24),
                         ],
-                        // Facilities
+                        
+                        // Facilities Section
                         if (venue.facility.isNotEmpty) ...[
                           const Text(
                             'Facilities',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
+                              color: Color(0xFF0D47A1),
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 12),
                           Wrap(
                             spacing: 8,
+                            runSpacing: 8,
                             children: venue.facility.map((facility) {
                               return Chip(
                                 label: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(Icons.check_circle, size: 16),
+                                    const Icon(
+                                      Icons.check_circle,
+                                      size: 16,
+                                      color: Colors.green,
+                                    ),
                                     const SizedBox(width: 4),
-                                    Text(facility),
+                                    Text(
+                                      facility,
+                                      style: const TextStyle(fontSize: 13),
+                                    ),
                                   ],
                                 ),
                                 backgroundColor: Colors.green[50],
+                                side: BorderSide(color: Colors.green[200]!),
                               );
                             }).toList(),
                           ),
                           const SizedBox(height: 24),
                         ],
-                        // Rules
+                        
+                        // Rules Section
                         if (venue.rules.isNotEmpty) ...[
                           const Text(
                             'Rules',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
+                              color: Color(0xFF0D47A1),
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 12),
                           Wrap(
                             spacing: 8,
+                            runSpacing: 8,
                             children: venue.rules.map((rule) {
                               return Chip(
                                 label: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(Icons.info_outline, size: 16),
+                                    const Icon(
+                                      Icons.info_outline,
+                                      size: 16,
+                                      color: Colors.blue,
+                                    ),
                                     const SizedBox(width: 4),
                                     Flexible(
                                       child: Text(
                                         rule.toString(),
-                                        style: const TextStyle(fontSize: 12),
+                                        style: const TextStyle(fontSize: 13),
                                       ),
                                     ),
                                   ],
                                 ),
                                 backgroundColor: Colors.orange[50],
+                                side: BorderSide(color: Colors.orange[200]!),
                               );
                             }).toList(),
                           ),
                           const SizedBox(height: 24),
                         ],
+                        
+                        // Price per session Section
+                        const Text(
+                          'Price per session',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Rp ${venue.sessionPrice.toStringAsFixed(0)}',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF0D47A1),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
                         // Book Button
                         SizedBox(
                           width: double.infinity,
-                          child: ElevatedButton(
+                          child: ElevatedButton.icon(
                             onPressed: () async {
                               final isLoggedIn = await ApiClient.isLoggedIn();
                               if (isLoggedIn) {
@@ -365,7 +430,8 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            child: const Text(
+                            icon: const Icon(Icons.calendar_today, color: Colors.white),
+                            label: const Text(
                               'Book Now',
                               style: TextStyle(
                                 fontSize: 18,

@@ -127,15 +127,45 @@ class BookingResponse {
     this.message,
   });
 
-  factory BookingResponse.fromJson(Map<String, dynamic> json) => BookingResponse(
-        status: json["status"],
-        data: json["data"] != null ? Booking.fromJson(json["data"]) : null,
-        dataList: json["data"] != null && json["data"] is List
-            ? List<Booking>.from(json["data"].map((x) => Booking.fromJson(x)))
-            : null,
-        count: json["count"],
-        message: json["message"],
-      );
+  factory BookingResponse.fromJson(Map<String, dynamic> json) {
+    // Handle data field - can be either a single Booking object or a List of Bookings
+    Booking? data;
+    List<Booking>? dataList;
+    
+    if (json["data"] != null) {
+      if (json["data"] is List) {
+        // data is a list
+        try {
+          dataList = List<Booking>.from(
+            (json["data"] as List).map((x) {
+              if (x is Map<String, dynamic>) {
+                return Booking.fromJson(x);
+              } else {
+                throw Exception('Invalid booking item in list: ${x.runtimeType}');
+              }
+            })
+          );
+        } catch (e) {
+          throw Exception('Error parsing booking list: $e');
+        }
+      } else if (json["data"] is Map<String, dynamic>) {
+        // data is a single object
+        try {
+          data = Booking.fromJson(json["data"] as Map<String, dynamic>);
+        } catch (e) {
+          throw Exception('Error parsing booking object: $e');
+        }
+      }
+    }
+    
+    return BookingResponse(
+      status: json["status"] ?? 'error',
+      data: data,
+      dataList: dataList,
+      count: json["count"],
+      message: json["message"],
+    );
+  }
 }
 
 List<Booking> bookingListFromJson(String str) =>

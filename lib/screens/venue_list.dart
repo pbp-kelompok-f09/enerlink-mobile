@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../models/venue.dart';
 import '../services/venue_service.dart';
 import 'venue_detail.dart';
+import 'booking_list.dart';
 
 class VenueListPage extends StatefulWidget {
   const VenueListPage({super.key});
@@ -123,8 +124,14 @@ class _VenueListPageState extends State<VenueListPage> {
                     child: Text("No venues available."),
                   );
                 } else {
-                  return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                  return GridView.builder(
+                    padding: const EdgeInsets.all(12),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      childAspectRatio: 0.65,
+                    ),
                     itemCount: snapshot.data!.data!.length,
                     itemBuilder: (context, index) {
                       final venue = snapshot.data!.data![index];
@@ -137,6 +144,26 @@ class _VenueListPageState extends State<VenueListPage> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const BookingListPage(),
+            ),
+          );
+        },
+        backgroundColor: const Color(0xFF0D47A1),
+        icon: const Icon(Icons.event_note, color: Colors.white),
+        label: const Text(
+          'My Bookings',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
@@ -146,10 +173,9 @@ class _VenueCard extends StatelessWidget {
 
   const _VenueCard({required this.venue});
 
-  Widget _buildImageWidget(String imageUrl, double height) {
-    // Try CachedNetworkImage first, fallback to Image.network if it fails
-    return SizedBox(
-      height: height,
+  Widget _buildImageWidget(String imageUrl) {
+    return Container(
+      height: 120,
       width: double.infinity,
       child: Image.network(
         imageUrl,
@@ -157,10 +183,10 @@ class _VenueCard extends StatelessWidget {
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) return child;
           return Container(
-            height: height,
             color: Colors.grey[300],
             child: Center(
               child: CircularProgressIndicator(
+                strokeWidth: 2,
                 value: loadingProgress.expectedTotalBytes != null
                     ? loadingProgress.cumulativeBytesLoaded /
                         loadingProgress.expectedTotalBytes!
@@ -170,10 +196,9 @@ class _VenueCard extends StatelessWidget {
           );
         },
         errorBuilder: (context, error, stackTrace) {
-          // If Image.network fails, try CachedNetworkImage as fallback
           return CachedNetworkImage(
             imageUrl: imageUrl,
-            height: height,
+            height: 120,
             width: double.infinity,
             fit: BoxFit.cover,
             httpHeaders: const {
@@ -181,14 +206,14 @@ class _VenueCard extends StatelessWidget {
               'User-Agent': 'Mozilla/5.0',
             },
             placeholder: (context, url) => Container(
-              height: height,
               color: Colors.grey[300],
-              child: const Center(child: CircularProgressIndicator()),
+              child: const Center(
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
             ),
             errorWidget: (context, url, error) => Container(
-              height: height,
               color: Colors.grey[300],
-              child: const Icon(Icons.image_not_supported, size: 48),
+              child: const Icon(Icons.image_not_supported, size: 32, color: Colors.grey),
             ),
           );
         },
@@ -199,11 +224,11 @@ class _VenueCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {
           Navigator.push(
@@ -213,66 +238,72 @@ class _VenueCard extends StatelessWidget {
             ),
           );
         },
-        borderRadius: BorderRadius.circular(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Image
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-              child: venue.imageUrl.isNotEmpty && 
-                     (venue.imageUrl.startsWith('http://') || 
-                      venue.imageUrl.startsWith('https://'))
-                  ? _buildImageWidget(venue.imageUrl, 200)
-                  : Container(
-                      height: 200,
-                      color: Colors.grey[300],
-                      child: const Icon(Icons.stadium, size: 64),
+            venue.imageUrl.isNotEmpty && 
+                   (venue.imageUrl.startsWith('http://') || 
+                    venue.imageUrl.startsWith('https://'))
+                ? _buildImageWidget(venue.imageUrl)
+                : Container(
+                    height: 120,
+                    color: Colors.grey[300],
+                    child: const Center(
+                      child: Icon(Icons.stadium, size: 40, color: Colors.grey),
                     ),
-            ),
+                  ),
             // Content
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(10.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          venue.name,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF0D47A1),
-                          ),
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          const Icon(Icons.star, color: Colors.amber, size: 20),
-                          const SizedBox(width: 4),
-                          Text(
-                            venue.rating.toStringAsFixed(1),
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                  // Venue Name
+                  Text(
+                    venue.name,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
+                  // Category Tag
+                  if (venue.category.isNotEmpty)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0D47A1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        venue.category.first,
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  const SizedBox(height: 6),
+                  // Location
                   if (venue.address.isNotEmpty)
                     Row(
                       children: [
-                        const Icon(Icons.location_on, size: 16, color: Colors.grey),
+                        const Icon(Icons.location_on, color: Colors.red, size: 14),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
                             venue.address,
-                            style: TextStyle(color: Colors.grey[600]),
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey[700],
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -280,42 +311,39 @@ class _VenueCard extends StatelessWidget {
                       ],
                     ),
                   const SizedBox(height: 8),
-                  if (venue.category.isNotEmpty)
-                    Wrap(
-                      spacing: 8,
-                      children: venue.category.take(3).map((cat) {
-                        return Chip(
-                          label: Text(
-                            cat,
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                          backgroundColor: Colors.blue[50],
-                          padding: EdgeInsets.zero,
-                        );
-                      }).toList(),
-                    ),
-                  const SizedBox(height: 8),
+                  // Price and Rating Row
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
-                        'Rp ${venue.sessionPrice.toStringAsFixed(0)}/hour',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green,
+                      // Price
+                      Expanded(
+                        child: Text(
+                          'Rp ${venue.sessionPrice.toStringAsFixed(0)}/session',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF0D47A1),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => VenueDetailPage(venueId: venue.idVenue),
+                      // Rating
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.star, color: Colors.amber, size: 14),
+                          const SizedBox(width: 2),
+                          Text(
+                            venue.rating.toStringAsFixed(2),
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
                             ),
-                          );
-                        },
-                        child: const Text('View Details'),
+                          ),
+                        ],
                       ),
                     ],
                   ),

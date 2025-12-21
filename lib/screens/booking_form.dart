@@ -19,11 +19,23 @@ class _BookingFormPageState extends State<BookingFormPage> {
   TimeOfDay? _endTime;
   Future<Venue>? _venueFuture;
   bool _isLoading = false;
+  
+  final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _startTimeController = TextEditingController();
+  final TextEditingController _endTimeController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _loadVenue();
+  }
+
+  @override
+  void dispose() {
+    _dateController.dispose();
+    _startTimeController.dispose();
+    _endTimeController.dispose();
+    super.dispose();
   }
 
   void _loadVenue() {
@@ -42,6 +54,7 @@ class _BookingFormPageState extends State<BookingFormPage> {
     if (picked != null && picked != _selectedDate) {
       setState(() {
         _selectedDate = picked;
+        _dateController.text = DateFormat('yyyy-MM-dd').format(picked);
       });
     }
   }
@@ -54,8 +67,10 @@ class _BookingFormPageState extends State<BookingFormPage> {
     if (picked != null && picked != _startTime) {
       setState(() {
         _startTime = picked;
+        _startTimeController.text = picked.format(context);
         if (_endTime != null && _endTime!.hour <= _startTime!.hour) {
           _endTime = null;
+          _endTimeController.clear();
         }
       });
     }
@@ -81,6 +96,7 @@ class _BookingFormPageState extends State<BookingFormPage> {
       }
       setState(() {
         _endTime = picked;
+        _endTimeController.text = picked.format(context);
       });
     }
   }
@@ -228,12 +244,11 @@ class _BookingFormPageState extends State<BookingFormPage> {
                     const SizedBox(height: 24),
                     // Date Picker
                     TextFormField(
+                      controller: _dateController,
                       readOnly: true,
                       decoration: InputDecoration(
                         labelText: 'Booking Date',
-                        hintText: _selectedDate == null
-                            ? 'Select date'
-                            : DateFormat('yyyy-MM-dd').format(_selectedDate!),
+                        hintText: 'Select date',
                         prefixIcon: const Icon(Icons.calendar_today),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -250,12 +265,11 @@ class _BookingFormPageState extends State<BookingFormPage> {
                     const SizedBox(height: 16),
                     // Start Time Picker
                     TextFormField(
+                      controller: _startTimeController,
                       readOnly: true,
                       decoration: InputDecoration(
                         labelText: 'Start Time',
-                        hintText: _startTime == null
-                            ? 'Select start time'
-                            : _startTime!.format(context),
+                        hintText: 'Select start time',
                         prefixIcon: const Icon(Icons.access_time),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -272,12 +286,11 @@ class _BookingFormPageState extends State<BookingFormPage> {
                     const SizedBox(height: 16),
                     // End Time Picker
                     TextFormField(
+                      controller: _endTimeController,
                       readOnly: true,
                       decoration: InputDecoration(
                         labelText: 'End Time',
-                        hintText: _endTime == null
-                            ? 'Select end time'
-                            : _endTime!.format(context),
+                        hintText: 'Select end time',
                         prefixIcon: const Icon(Icons.access_time),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
