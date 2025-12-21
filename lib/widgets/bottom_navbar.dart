@@ -37,10 +37,6 @@ class BottomNavbar extends StatelessWidget {
             label: 'Venues',
           ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Account'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.forum_rounded),
-            label: 'Forum',
-          ),
         ],
         currentIndex: selectedIndex,
         selectedItemColor: const Color(
