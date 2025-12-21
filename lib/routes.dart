@@ -2,6 +2,7 @@ import 'package:enerlink_mobile/screens/not_found_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:enerlink_mobile/screens/main_screen.dart';
 import 'package:enerlink_mobile/screens/auth/login_screen.dart';
+import 'package:enerlink_mobile/screens/admin_dashboard_screen.dart'; // Import AdminDashboardScreen
 import 'screens/auth/register_screen.dart';
 import 'screens/account_screen.dart';
 import 'screens/profile_screen.dart';
@@ -69,6 +70,10 @@ class EnerlinkMobileRouter {
       case '/profile':
         return MaterialPageRoute(
           builder: (context) => const ProfileScreenMobile(),
+        );
+      case '/admin':
+        return MaterialPageRoute(
+          builder: (context) => const AdminDashboardScreen(),
         );
       default:
         return MaterialPageRoute(

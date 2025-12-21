@@ -9,16 +9,16 @@ import 'package:http_parser/http_parser.dart';
 class ApiClient {
   static http.Client client = http.Client();
 
-  static String baseUrl = 'http://127.0.0.1:8000'; // Hardcode sementara
+  // static String baseUrl = 'http://127.0.0.1:8000'; // Hardcode sementara
 
-//   static String get baseUrl {
-//   // Gunakan maybeGet agar tidak crash jika belum initialized
-//   final envUrl = dotenv.maybeGet('BACKEND_URL');
-//   if (envUrl != null) return envUrl;
+  static String get baseUrl {
+  // Gunakan maybeGet agar tidak crash jika belum initialized
+  final envUrl = dotenv.maybeGet('BACKEND_URL');
+  if (envUrl != null) return envUrl;
   
-//   // Fallback ke localhost jika .env belum siap
-//   return 'http://127.0.0.1:8000';
-// }
+  // Fallback ke localhost jika .env belum siap
+  return 'http://127.0.0.1:8000';
+}
 
   static const String tokenKey = 'auth_token';
   static const Duration timeout = Duration(seconds: 15);

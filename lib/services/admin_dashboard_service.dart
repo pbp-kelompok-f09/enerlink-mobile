@@ -6,13 +6,13 @@ import '../models/admin_venue_model.dart';
 import '../models/admin_community_model.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'api_client.dart'; // Import ApiClient
 
 class AdminDashboardService {
   
   // 1. Fungsi Ambil Statistik (Untuk Dashboard Utama)
   Future<AdminDashboardStats> fetchStats(CookieRequest request) async {
-    // Sesuaikan URL: 10.0.2.2 (Emulator) atau 127.0.0.1 (Web/iOS)
-    const String url = 'http://127.0.0.1:8000/admin-dashboard/api/stats/';
+    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/stats/';
     
     final response = await request.get(url);
 
@@ -21,7 +21,7 @@ class AdminDashboardService {
 
   // 2. Fungsi Ambil Daftar User (Ini yang tadi ERROR karena belum ada)
   Future<List<AdminUser>> fetchUsers(CookieRequest request) async {
-    const String url = 'http://127.0.0.1:8000/admin-dashboard/api/users/';
+    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/users/';
     
     final response = await request.get(url);
 
@@ -37,15 +37,7 @@ class AdminDashboardService {
 
   // Fungsi Hapus User
   Future<bool> deleteUser(CookieRequest request, int userId) async {
-    // Sesuaikan URL dengan endpoint delete di Django views.py kamu
-    // Biasanya formatnya: /admin-dashboard/users/delete/<int:user_id>/
-    // Tapi karena kita main API, kita harus pastikan endpointnya benar.
-    
-    // Cek urls.py Django: path('users/delete/<int:user_id>/', delete_user, ...)
-    // Endpoint ini me-return HTML (redirect), tapi untuk delete biasanya masih bisa dipakai 
-    // asalkan kita tidak mengharapkan JSON balikan.
-    
-final String url = 'http://127.0.0.1:8000/admin-dashboard/api/users/delete/$userId/';
+    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/users/delete/$userId/';
     
     try {
       final response = await request.post(url, {});
@@ -58,7 +50,7 @@ final String url = 'http://127.0.0.1:8000/admin-dashboard/api/users/delete/$user
 
   // --- VENUE SERVICES ---
   Future<List<AdminVenue>> fetchVenues(CookieRequest request) async {
-    final String url = 'http://127.0.0.1:8000/admin-dashboard/api/venues/';
+    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/venues/';
     final response = await request.get(url);
     List<AdminVenue> list = [];
     for (var d in response) {
@@ -68,7 +60,7 @@ final String url = 'http://127.0.0.1:8000/admin-dashboard/api/users/delete/$user
   }
 
   Future<bool> deleteVenue(CookieRequest request, String venueId) async {
-    final String url = 'http://127.0.0.1:8000/admin-dashboard/api/venues/delete/$venueId/';
+    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/venues/delete/$venueId/';
     try {
       final response = await request.post(url, {});
       return response['status'] == 'success';
@@ -79,7 +71,7 @@ final String url = 'http://127.0.0.1:8000/admin-dashboard/api/users/delete/$user
 
   // --- COMMUNITY SERVICES ---
   Future<List<AdminCommunity>> fetchCommunities(CookieRequest request) async {
-    final String url = 'http://127.0.0.1:8000/admin-dashboard/api/communities/';
+    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/communities/';
     final response = await request.get(url);
     List<AdminCommunity> list = [];
     for (var d in response) {
@@ -89,7 +81,7 @@ final String url = 'http://127.0.0.1:8000/admin-dashboard/api/users/delete/$user
   }
 
   Future<bool> deleteCommunity(CookieRequest request, String communityId) async {
-    final String url = 'http://127.0.0.1:8000/admin-dashboard/api/communities/delete/$communityId/';
+    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/communities/delete/$communityId/';
     try {
       final response = await request.post(url, {});
       return response['status'] == 'success';
@@ -103,13 +95,13 @@ final String url = 'http://127.0.0.1:8000/admin-dashboard/api/users/delete/$user
   // --- VENUE WITH IMAGE ---
 
   Future<bool> addVenueWithImage(CookieRequest request, Map<String, String> data, {List<int>? imageBytes, String? filename}) async {
-    final String url = 'http://127.0.0.1:8000/admin-dashboard/api/venues/add/';
+    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/venues/add/';
     return _sendMultipartRequest(request, url, data, imageBytes, filename);
   }
 
   // Tambahkan/Ganti editVenue
   Future<bool> editVenue(CookieRequest request, String venueId, Map<String, String> data, {List<int>? imageBytes, String? filename}) async {
-    final String url = 'http://127.0.0.1:8000/admin-dashboard/api/venues/edit/$venueId/';
+    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/venues/edit/$venueId/';
     return _sendMultipartRequest(request, url, data, imageBytes, filename);
   }
 
@@ -156,7 +148,7 @@ final String url = 'http://127.0.0.1:8000/admin-dashboard/api/users/delete/$user
 
   // 1. Add Community (Kembali ke POST biasa)
   Future<bool> addCommunity(CookieRequest request, Map<String, dynamic> data) async {
-    final String url = 'http://127.0.0.1:8000/admin-dashboard/api/communities/add/';
+    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/communities/add/';
     try {
       final response = await request.post(url, data);
       return response['status'] == 'success';
@@ -167,7 +159,7 @@ final String url = 'http://127.0.0.1:8000/admin-dashboard/api/users/delete/$user
 
   // 2. Edit Community (Kembali ke POST biasa)
   Future<bool> editCommunity(CookieRequest request, String id, Map<String, dynamic> data) async {
-    final String url = 'http://127.0.0.1:8000/admin-dashboard/api/communities/edit/$id/';
+    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/communities/edit/$id/';
     try {
       final response = await request.post(url, data);
       return response['status'] == 'success';
@@ -179,7 +171,7 @@ final String url = 'http://127.0.0.1:8000/admin-dashboard/api/users/delete/$user
   // Ganti editUser lama dengan yang ini
   Future<bool> editUser(CookieRequest request, int id, Map<String, String> data, {List<int>? imageBytes, String? filename}) async {
     // Sesuaikan URL dengan punyamu (misal: http://127.0.0.1:8000/admin-dashboard/api/users/edit/$id/)
-    final String url = 'http://127.0.0.1:8000/admin-dashboard/api/users/edit/$id/';
+    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/users/edit/$id/';
     return _sendMultipartRequest(request, url, data, imageBytes, filename);
   }
 
@@ -187,20 +179,20 @@ final String url = 'http://127.0.0.1:8000/admin-dashboard/api/users/delete/$user
 
   // Update fungsi addUser jadi support gambar
   Future<bool> addUser(CookieRequest request, Map<String, String> data, {List<int>? imageBytes, String? filename}) async {
-    final String url = 'http://127.0.0.1:8000/admin-dashboard/api/users/add/';
+    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/users/add/';
     // Gunakan helper _sendMultipartRequest yang sudah kita buat sebelumnya
     return _sendMultipartRequest(request, url, data, imageBytes, filename);
   }
 
   // Ganti addVenue lama dengan yang ini
   Future<bool> addVenue(CookieRequest request, Map<String, String> data, {List<int>? imageBytes, String? filename}) async {
-    final String url = 'http://127.0.0.1:8000/admin-dashboard/api/venues/add/';
+    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/venues/add/';
     return _sendMultipartRequest(request, url, data, imageBytes, filename);
   }
 
   Future<bool> updateUserWithImage(CookieRequest request, int userId, Map<String, String> data, {List<int>? imageBytes, String? filename}) async {
     // URL Endpoint
-    final String url = 'http://127.0.0.1:8000/admin-dashboard/api/users/update/$userId/';
+    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/users/update/$userId/';
     
     // Karena pbp_django_auth mungkin belum support full multipart dengan mudah,
     // Kita bisa gunakan pendekatan hybrid atau request manual jika perlu.

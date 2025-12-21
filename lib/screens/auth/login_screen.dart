@@ -57,7 +57,15 @@ class _LoginScreenMobileState extends State<LoginScreenMobile> {
           print('Warning: ApiClient login sync failed: $e');
         }
 
-        Navigator.pushReplacementNamed(context, '/');
+        // Check for admin role
+        final userData = response['user'];
+        final bool isAdmin = (userData != null && (userData['is_superuser'] == true || userData['is_staff'] == true));
+
+        if (isAdmin) {
+          Navigator.pushReplacementNamed(context, '/admin');
+        } else {
+          Navigator.pushReplacementNamed(context, '/');
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
