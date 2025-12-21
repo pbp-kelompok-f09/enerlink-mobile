@@ -9,9 +9,16 @@ import 'package:http_parser/http_parser.dart';
 class ApiClient {
   static http.Client client = http.Client();
 
+  // static String baseUrl = 'http://127.0.0.1:8000'; // Hardcode sementara
+
   static String get baseUrl {
-    return dotenv.env['BACKEND_URL'] ?? 'http://localhost:8000';
-  }
+  // Gunakan maybeGet agar tidak crash jika belum initialized
+  final envUrl = dotenv.maybeGet('BACKEND_URL');
+  if (envUrl != null) return envUrl;
+  
+  // Fallback ke localhost jika .env belum siap
+  return 'http://127.0.0.1:8000';
+}
 
   static const String tokenKey = 'auth_token';
   static const Duration timeout = Duration(seconds: 15);
@@ -128,6 +135,9 @@ class ApiClient {
   // === Dashboard Data ===
   static Future<Map<String, dynamic>?> getDashboardData() async {
     try {
+      if (!dotenv.isInitialized) {
+        await Future.delayed(const Duration(milliseconds: 500));
+      }
       final headers = await getAuthHeaders();
       final uri = Uri.parse('$baseUrl/api/dashboard/');
       print('🔄 Dashboard request to: $uri');

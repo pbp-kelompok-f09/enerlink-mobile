@@ -5,6 +5,8 @@ class User {
   final String? firstName;
   final String? lastName;
   final String? profilePicture;
+  final bool isSuperuser;
+  final bool isStaff;
 
   User({
     required this.id,
@@ -13,6 +15,8 @@ class User {
     this.firstName,
     this.lastName,
     this.profilePicture,
+    this.isSuperuser = false,
+    this.isStaff = false,
   });
 
   factory User.fromJson(Map<String, dynamic> json){
@@ -23,6 +27,8 @@ class User {
       firstName: json['first_name'],
       lastName: json['last_name'],
       profilePicture: json['profile_picture'],
+      isSuperuser: json['is_superuser'] ?? false,
+      isStaff: json['is_staff'] ?? false,
     );
   }
 
@@ -34,6 +40,8 @@ class User {
       'first_name': firstName,
       'last_name': lastName,
       'profile_picture': profilePicture,
+      'is_superuser': isSuperuser,
+      'is_staff': isStaff,
     };
   }
 

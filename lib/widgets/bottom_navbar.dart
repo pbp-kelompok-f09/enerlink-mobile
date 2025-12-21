@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class BottomNavbar extends StatelessWidget {
   final int selectedIndex;
   final Function(int) onItemTapped;
+  final bool isAdmin;
 
   const BottomNavbar({
     super.key,
     required this.selectedIndex,
     required this.onItemTapped,
+    this.isAdmin = false,
   });
 
   @override
@@ -23,20 +25,25 @@ class BottomNavbar extends StatelessWidget {
         ],
       ),
       child: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
+        items: <BottomNavigationBarItem>[
+          const BottomNavigationBarItem(
             icon: Icon(Icons.home_rounded),
             label: 'Home',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.groups_rounded),
             label: 'Comm',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.stadium_rounded),
             label: 'Venues',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Account'),
+          const BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Account'),
+          if (isAdmin)
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.admin_panel_settings),
+              label: 'Admin',
+            ),
         ],
         currentIndex: selectedIndex,
         selectedItemColor: const Color(

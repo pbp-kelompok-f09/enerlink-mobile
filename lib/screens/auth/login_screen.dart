@@ -31,37 +31,50 @@ class _LoginScreenMobileState extends State<LoginScreenMobile> {
 
     try {
       final request = context.read<CookieRequest>();
-      
+
       // Use CookieRequest to login
       final response = await request.login(
         '${dotenv.env["BACKEND_URL"]}/api/auth/login/',
-        {
-          'username': _username.text,
-          'password': _password.text,
-        },
+        {'username': _username.text, 'password': _password.text},
       );
-      
+
       if (!mounted) return;
       setState(() => _loading = false);
 
       if (response['success'] == true) {
         // Also call ApiClient.login if you want to keep its token-based system in sync
         // but for now, the session cookie from CookieRequest is what matters for join-flutter
-        
+
         // Optional: Keep ApiClient in sync if it's used elsewhere
         try {
-           if (response['token'] != null) {
-              await ApiClient.saveToken(response['token']);
-           }
+          if (response['token'] != null) {
+            await ApiClient.saveToken(response['token']);
+          }
         } catch (e) {
           print('Warning: ApiClient login sync failed: $e');
         }
 
-        Navigator.pushReplacementNamed(context, '/');
+        // Check for admin role
+        final userData = response['user'];
+        final bool isAdmin =
+            (userData != null &&
+            (userData['is_superuser'] == true || userData['is_staff'] == true));
+
+        if (isAdmin) {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/admin',
+            (route) => false,
+          );
+        } else {
+          Navigator.pushReplacementNamed(context, '/');
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(response['message'] ?? response['error'] ?? 'Login gagal'),
+            content: Text(
+              response['message'] ?? response['error'] ?? 'Login gagal',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -70,10 +83,7 @@ class _LoginScreenMobileState extends State<LoginScreenMobile> {
       if (!mounted) return;
       setState(() => _loading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $e'),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
       );
     }
   }
@@ -96,11 +106,16 @@ class _LoginScreenMobileState extends State<LoginScreenMobile> {
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 400),
                 child: Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                  ),
                   elevation: 12,
                   shadowColor: Colors.black26,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 28,
+                      vertical: 36,
+                    ),
                     child: Form(
                       key: _formKey,
                       child: Column(
@@ -113,7 +128,7 @@ class _LoginScreenMobileState extends State<LoginScreenMobile> {
                             fit: BoxFit.contain,
                           ),
                           const SizedBox(height: 24),
-                          
+
                           // Title
                           const Text(
                             'Welcome Back!',
@@ -132,14 +147,17 @@ class _LoginScreenMobileState extends State<LoginScreenMobile> {
                             ),
                           ),
                           const SizedBox(height: 32),
-                          
+
                           // Username Field
                           TextFormField(
                             controller: _username,
                             decoration: InputDecoration(
                               labelText: 'Username',
                               hintText: 'Enter your username',
-                              prefixIcon: const Icon(Icons.person_outline, color: Color(0xFF2563EB)),
+                              prefixIcon: const Icon(
+                                Icons.person_outline,
+                                color: Color(0xFF2563EB),
+                              ),
                               filled: true,
                               fillColor: Colors.grey[50],
                               border: OutlineInputBorder(
@@ -148,22 +166,32 @@ class _LoginScreenMobileState extends State<LoginScreenMobile> {
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: Colors.grey[300]!),
+                                borderSide: BorderSide(
+                                  color: Colors.grey[300]!,
+                                ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: Color(0xFF2563EB), width: 2),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFF2563EB),
+                                  width: 2,
+                                ),
                               ),
                               errorBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: const BorderSide(color: Colors.red),
                               ),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 16,
+                              ),
                             ),
-                            validator: (v) => v == null || v.isEmpty ? 'Username wajib diisi' : null,
+                            validator: (v) => v == null || v.isEmpty
+                                ? 'Username wajib diisi'
+                                : null,
                           ),
                           const SizedBox(height: 16),
-                          
+
                           // Password Field
                           TextFormField(
                             controller: _password,
@@ -171,13 +199,19 @@ class _LoginScreenMobileState extends State<LoginScreenMobile> {
                             decoration: InputDecoration(
                               labelText: 'Password',
                               hintText: 'Enter your password',
-                              prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF2563EB)),
+                              prefixIcon: const Icon(
+                                Icons.lock_outline,
+                                color: Color(0xFF2563EB),
+                              ),
                               suffixIcon: IconButton(
                                 icon: Icon(
-                                  _obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                                  _obscure
+                                      ? Icons.visibility_off_outlined
+                                      : Icons.visibility_outlined,
                                   color: Colors.grey[600],
                                 ),
-                                onPressed: () => setState(() => _obscure = !_obscure),
+                                onPressed: () =>
+                                    setState(() => _obscure = !_obscure),
                               ),
                               filled: true,
                               fillColor: Colors.grey[50],
@@ -187,22 +221,32 @@ class _LoginScreenMobileState extends State<LoginScreenMobile> {
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: Colors.grey[300]!),
+                                borderSide: BorderSide(
+                                  color: Colors.grey[300]!,
+                                ),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: Color(0xFF2563EB), width: 2),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFF2563EB),
+                                  width: 2,
+                                ),
                               ),
                               errorBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: const BorderSide(color: Colors.red),
                               ),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 16,
+                              ),
                             ),
-                            validator: (v) => v == null || v.isEmpty ? 'Password wajib diisi' : null,
+                            validator: (v) => v == null || v.isEmpty
+                                ? 'Password wajib diisi'
+                                : null,
                           ),
                           const SizedBox(height: 24),
-                          
+
                           // Login Button
                           SizedBox(
                             width: double.infinity,
@@ -213,7 +257,9 @@ class _LoginScreenMobileState extends State<LoginScreenMobile> {
                                 backgroundColor: const Color(0xFF2563EB),
                                 foregroundColor: Colors.white,
                                 elevation: 2,
-                                shadowColor: const Color(0xFF2563EB).withValues(alpha: 0.4),
+                                shadowColor: const Color(
+                                  0xFF2563EB,
+                                ).withValues(alpha: 0.4),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -238,33 +284,42 @@ class _LoginScreenMobileState extends State<LoginScreenMobile> {
                             ),
                           ),
                           const SizedBox(height: 24),
-                          
+
                           // Divider
                           Row(
                             children: [
                               Expanded(child: Divider(color: Colors.grey[300])),
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
                                 child: Text(
                                   'or',
-                                  style: TextStyle(color: Colors.grey[500], fontSize: 14),
+                                  style: TextStyle(
+                                    color: Colors.grey[500],
+                                    fontSize: 14,
+                                  ),
                                 ),
                               ),
                               Expanded(child: Divider(color: Colors.grey[300])),
                             ],
                           ),
                           const SizedBox(height: 24),
-                          
+
                           // Register Link
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
                                 "Don't have an account? ",
-                                style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 14,
+                                ),
                               ),
                               GestureDetector(
-                                onTap: () => Navigator.pushNamed(context, '/register'),
+                                onTap: () =>
+                                    Navigator.pushNamed(context, '/register'),
                                 child: const Text(
                                   'Sign Up',
                                   style: TextStyle(
@@ -277,10 +332,11 @@ class _LoginScreenMobileState extends State<LoginScreenMobile> {
                             ],
                           ),
                           const SizedBox(height: 16),
-                          
+
                           // Back to Home
                           TextButton.icon(
-                            onPressed: () => Navigator.pushReplacementNamed(context, '/'),
+                            onPressed: () =>
+                                Navigator.pushReplacementNamed(context, '/'),
                             icon: const Icon(Icons.arrow_back, size: 18),
                             label: const Text('Back to Home'),
                             style: TextButton.styleFrom(
