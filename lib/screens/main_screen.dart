@@ -9,6 +9,7 @@ import 'package:enerlink_mobile/models/venue.dart';
 import 'package:enerlink_mobile/services/venue_service.dart';
 import 'package:enerlink_mobile/screens/venue_detail.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:enerlink_mobile/screens/forum/forum_list_screen.dart';
 
 class MainScreenMobile extends StatefulWidget {
   final int initialIndex;
@@ -33,7 +34,7 @@ class _MainScreenMobileState extends State<MainScreenMobile> {
       const CommunityListPage(), // Index 1: Community List
       const VenueListPage(), // Index 2: Venue List (From Venue Branch)
       const UserDashboardScreenMobile(), // Index 3: User Dashboard (From Dev Branch)
-      const PlaceholderPage(title: 'Forum', icon: Icons.forum_rounded), // Index 4: Forum (Placeholder)
+      const ForumTab(), // Index 4: Forum
     ];
   }
 

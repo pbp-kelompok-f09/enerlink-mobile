@@ -41,6 +41,8 @@ class EnerlinkMobileRouter {
         return MaterialPageRoute(builder: (_) => const AccountScreenMobile());
       case '/dashboard': // alias
         return MaterialPageRoute(builder: (_) => const MainScreenMobile(initialIndex: 3));
+      case '/forum':
+        return MaterialPageRoute(builder: (_) => const MainScreenMobile(initialIndex: 4));
       case '/login':
         return MaterialPageRoute(builder: (_) => const LoginScreenMobile());
       case '/register':
