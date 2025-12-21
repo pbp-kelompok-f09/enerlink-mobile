@@ -1,5 +1,7 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../services/api_client.dart';
 
 class LoginScreenMobile extends StatefulWidget {
@@ -28,28 +30,38 @@ class _LoginScreenMobileState extends State<LoginScreenMobile> {
     setState(() => _loading = true);
 
     try {
-      final response = await ApiClient.login(_username.text, _password.text);
+      final request = context.read<CookieRequest>();
+      
+      // Use CookieRequest to login
+      final response = await request.login(
+        '${dotenv.env["BACKEND_URL"]}/api/auth/login/',
+        {
+          'username': _username.text,
+          'password': _password.text,
+        },
+      );
       
       if (!mounted) return;
       setState(() => _loading = false);
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (data['success'] == true || data['token'] != null) {
-          Navigator.pushReplacementNamed(context, '/');
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(data['error'] ?? 'Login gagal'),
-              backgroundColor: Colors.red,
-            ),
-          );
+      if (response['success'] == true) {
+        // Also call ApiClient.login if you want to keep its token-based system in sync
+        // but for now, the session cookie from CookieRequest is what matters for join-flutter
+        
+        // Optional: Keep ApiClient in sync if it's used elsewhere
+        try {
+           if (response['token'] != null) {
+              await ApiClient.saveToken(response['token']);
+           }
+        } catch (e) {
+          print('Warning: ApiClient login sync failed: $e');
         }
+
+        Navigator.pushReplacementNamed(context, '/');
       } else {
-        final data = jsonDecode(response.body);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(data['error'] ?? 'Login gagal'),
+            content: Text(response['message'] ?? response['error'] ?? 'Login gagal'),
             backgroundColor: Colors.red,
           ),
         );
