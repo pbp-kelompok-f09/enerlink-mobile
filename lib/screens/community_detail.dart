@@ -5,6 +5,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:enerlink_mobile/models/community.dart';
 import 'package:enerlink_mobile/screens/community_edit.dart';
+import 'package:enerlink_mobile/screens/event_create.dart';
+import 'package:enerlink_mobile/screens/event_edit.dart';
+import 'dart:convert';
 
 class CommunityDetailPage extends StatefulWidget {
   final Community community;
@@ -35,19 +38,37 @@ class _CommunityDetailPageState extends State<CommunityDetailPage> {
   Future<void> _loadCommunityDetails() async {
     final request = context.read<CookieRequest>();
 
+    // Load extra info (isAdmin, etc)
+    try {
+      final detailResponse = await request.get(
+        '${dotenv.env["BACKEND_URL"]}/community/${widget.community.pk}/json-detail/'
+      );
+      if (mounted) {
+        setState(() {
+          _isAdmin = detailResponse['is_admin'] ?? false;
+        });
+      }
+    } catch (e) {
+      print('Error loading detail: $e');
+    }
+
     // Load events
     try {
       final eventsResponse = await request.get(
-        '${dotenv.env["BACKEND_URL"]}/community-events/json/${widget.community.pk}/'
+        '${dotenv.env["BACKEND_URL"]}/community-events/json-flutter/${widget.community.pk}/'
       );
-      setState(() {
-        _events = eventsResponse as List<dynamic>;
-        _isLoadingEvents = false;
-      });
+      if (mounted) {
+        setState(() {
+          _events = eventsResponse as List<dynamic>;
+          _isLoadingEvents = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _isLoadingEvents = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoadingEvents = false;
+        });
+      }
       print('Error loading events: $e');
     }
 
@@ -65,6 +86,89 @@ class _CommunityDetailPageState extends State<CommunityDetailPage> {
         _isLoadingForum = false;
       });
       print('Error loading forum threads: $e');
+    }
+  }
+
+  Future<void> _joinEvent(dynamic event) async {
+    final request = context.read<CookieRequest>();
+    try {
+      final response = await request.postJson(
+        '${dotenv.env["BACKEND_URL"]}/community-events/${event['id_event']}/join-flutter/',
+        jsonEncode({}),
+      );
+
+      if (!mounted) return;
+
+      if (response['status'] == 'success') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Berhasil bergabung dengan ${event['title']}!')),
+        );
+        _loadCommunityDetails();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(response['message'] ?? 'Gagal bergabung')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
+  }
+
+  Future<void> _deleteEvent(dynamic event) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Hapus Event'),
+        content: Text('Apakah Anda yakin ingin menghapus event "${event['title']}"?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Batal')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Hapus', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    final request = context.read<CookieRequest>();
+    try {
+      final response = await request.postJson(
+        '${dotenv.env["BACKEND_URL"]}/community-events/${event['id_event']}/delete-flutter/',
+        jsonEncode({}),
+      );
+
+      if (!mounted) return;
+
+      if (response['status'] == 'success') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Event berhasil dihapus')),
+        );
+        _loadCommunityDetails();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(response['message'] ?? 'Gagal menghapus event')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
+  }
+
+  Future<void> _editEvent(dynamic event) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventEditPage(event: event),
+      ),
+    );
+    if (result == true) {
+      _loadCommunityDetails();
     }
   }
 
@@ -250,11 +354,16 @@ class _CommunityDetailPageState extends State<CommunityDetailPage> {
                             const SizedBox(width: 12),
                             Expanded(
                               child: ElevatedButton.icon(
-                                onPressed: () {
-                                  // TODO: Navigate to create event
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Create event feature coming soon!')),
+                                onPressed: () async {
+                                  final result = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => EventCreatePage(community: widget.community),
+                                    ),
                                   );
+                                  if (result == true) {
+                                    _loadCommunityDetails();
+                                  }
                                 },
                                 icon: const Icon(Icons.add),
                                 label: const Text('Tambah Kegiatan'),
@@ -549,39 +658,24 @@ class _CommunityDetailPageState extends State<CommunityDetailPage> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {
-                    // TODO: Implement join event
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Join event feature coming soon!')),
-                    );
-                  },
+                  onPressed: () => _joinEvent(event),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF293BA0),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text('Gabung Event'),
+                  child: const Text('Gabung Event', style: TextStyle(color: Colors.white)),
                 ),
               ),
               if (_isAdmin) ...[
                 const SizedBox(width: 8),
                 IconButton(
-                  onPressed: () {
-                    // TODO: Implement edit event
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Edit event feature coming soon!')),
-                    );
-                  },
+                  onPressed: () => _editEvent(event),
                   icon: const Icon(Icons.edit, color: Colors.blue),
                 ),
                 IconButton(
-                  onPressed: () {
-                    // TODO: Implement delete event
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Delete event feature coming soon!')),
-                    );
-                  },
+                  onPressed: () => _deleteEvent(event),
                   icon: const Icon(Icons.delete, color: Colors.red),
                 ),
               ],
