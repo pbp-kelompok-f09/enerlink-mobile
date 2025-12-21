@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -44,6 +45,7 @@ class ApiClient {
     };
     if (token != null) {
       headers['Authorization'] = 'Bearer $token';
+      headers['Cookie'] = 'sessionid=$token';
     }
     return headers;
   }

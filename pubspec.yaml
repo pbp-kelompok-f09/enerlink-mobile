@@ -78,6 +78,7 @@ flutter:
 
   assets:
     - .env
+    - .env.prod
     - lib/assets/images/noProfile.jpg
     - lib/assets/images/enerlink.png
     - lib/assets/images/blackBlueEnerlink.png

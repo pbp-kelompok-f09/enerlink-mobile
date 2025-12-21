@@ -5,6 +5,10 @@ import 'package:enerlink_mobile/screens/venue_list.dart'; // From Venue branch
 import 'package:enerlink_mobile/services/auth_service.dart';
 import 'package:enerlink_mobile/models/user.dart';
 import 'package:enerlink_mobile/screens/dashboard/user_dashboard_screen.dart'; // From Dev branch
+import 'package:enerlink_mobile/models/venue.dart';
+import 'package:enerlink_mobile/services/venue_service.dart';
+import 'package:enerlink_mobile/screens/venue_detail.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class MainScreenMobile extends StatefulWidget {
   final int initialIndex;
@@ -68,11 +72,14 @@ class HomeContent extends StatefulWidget {
 
 class _HomeContentState extends State<HomeContent> {
   User? _currentUser;
+  List<Venue> _featuredVenues = [];
+  bool _isLoadingVenues = true;
 
   @override
   void initState() {
     super.initState();
     _loadUser();
+    _loadFeaturedVenues();
   }
 
   Future<void> _loadUser() async {
@@ -81,6 +88,24 @@ class _HomeContentState extends State<HomeContent> {
       setState(() {
         _currentUser = user;
       });
+    }
+  }
+
+  Future<void> _loadFeaturedVenues() async {
+    try {
+      final response = await VenueService.getVenues();
+      if (mounted && response.data != null) {
+        setState(() {
+          // Take top 5 venues for the carousel
+          _featuredVenues = response.data!.take(5).toList();
+          _isLoadingVenues = false;
+        });
+      } else {
+        if (mounted) setState(() => _isLoadingVenues = false);
+      }
+    } catch (e) {
+      // debugPrint("Error loading featured venues: $e");
+      if (mounted) setState(() => _isLoadingVenues = false);
     }
   }
 
@@ -201,7 +226,32 @@ class _HomeContentState extends State<HomeContent> {
                   ),
                 ),
 
-                const SizedBox(height: 40),
+                const SizedBox(height: 30),
+
+                // Featured Venues Carousel
+                if (!_isLoadingVenues && _featuredVenues.isNotEmpty) ...[
+                  Text(
+                    'Featured Venues',
+                    style: TextStyle(
+                      color: Colors.white.withAlpha((255 * 0.9).round()),
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    height: 200,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _featuredVenues.length,
+                      itemBuilder: (context, index) {
+                        final venue = _featuredVenues[index];
+                        return _buildVenueCard(context, venue);
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                ],
 
                 // Categories / Menu Grid
                 Text(
@@ -341,9 +391,125 @@ class _HomeContentState extends State<HomeContent> {
     );
   }
 
+  Widget _buildVenueCard(BuildContext context, Venue venue) {
+    return Container(
+      width: 280,
+      margin: const EdgeInsets.only(right: 16),
+      child: GestureDetector(
+        onTap: () {
+           Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VenueDetailPage(venueId: venue.idVenue),
+            ),
+          );
+        },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // Background Image
+              venue.imageUrl.isNotEmpty &&
+                      (venue.imageUrl.startsWith('http://') ||
+                          venue.imageUrl.startsWith('https://'))
+                  ? CachedNetworkImage(
+                      imageUrl: venue.imageUrl,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
+                        color: Colors.grey[300],
+                        child: const Center(child: CircularProgressIndicator()),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        color: Colors.grey[300],
+                        child: const Icon(Icons.stadium, size: 50, color: Colors.grey),
+                      ),
+                    )
+                  : Container(
+                      color: Colors.grey[300],
+                      child: const Icon(Icons.stadium, size: 50, color: Colors.grey),
+                    ),
+              
+              // Gradient Overlay
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withAlpha(180),
+                    ],
+                    stops: const [0.6, 1.0],
+                  ),
+                ),
+              ),
+
+              // Content
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      venue.name,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(Icons.star, color: Colors.amber, size: 16),
+                        const SizedBox(width: 4),
+                        Text(
+                          venue.rating.toStringAsFixed(1),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            venue.address,
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Rp ${venue.sessionPrice.toStringAsFixed(0)}',
+                      style: const TextStyle(
+                        color: Colors.greenAccent,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildFeatureCard(
-    BuildContext context,
-    {
+    BuildContext context,    {
     required String title,
     required IconData icon,
     required Color color1,
