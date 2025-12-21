@@ -9,6 +9,7 @@ import 'package:enerlink_mobile/models/venue.dart';
 import 'package:enerlink_mobile/services/venue_service.dart';
 import 'package:enerlink_mobile/screens/venue_detail.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:enerlink_mobile/screens/admin_dashboard_screen.dart';
 
 class MainScreenMobile extends StatefulWidget {
   final int initialIndex;
@@ -20,24 +21,36 @@ class MainScreenMobile extends StatefulWidget {
 
 class _MainScreenMobileState extends State<MainScreenMobile> {
   late int _selectedIndex;
+  bool _isAdmin = false;
+  bool _isLoading = true;
 
-  // List of pages to switch between
-  late final List<Widget> _pages;
+  // List of base pages
+  final List<Widget> _basePages = [
+    const HomeContent(), // Index 0: Home
+    const CommunityListPage(), // Index 1: Community List
+    const VenueListPage(), // Index 2: Venue List
+    const UserDashboardScreenMobile(), // Index 3: User Dashboard
+    const PlaceholderPage(
+      title: 'Forum',
+      icon: Icons.forum_rounded,
+    ), // Index 4: Forum
+  ];
 
   @override
   void initState() {
     super.initState();
     _selectedIndex = widget.initialIndex;
-    _pages = [
-      const HomeContent(), // Index 0: Home (The Dashboard)
-      const CommunityListPage(), // Index 1: Community List
-      const VenueListPage(), // Index 2: Venue List (From Venue Branch)
-      const UserDashboardScreenMobile(), // Index 3: User Dashboard (From Dev Branch)
-      const PlaceholderPage(
-        title: 'Forum',
-        icon: Icons.forum_rounded,
-      ), // Index 4: Forum (Placeholder)
-    ];
+    _checkUser();
+  }
+
+  Future<void> _checkUser() async {
+    final user = await AuthService.getCurrentUser();
+    if (mounted) {
+      setState(() {
+        _isAdmin = user != null && (user.isSuperuser || user.isStaff);
+        _isLoading = false;
+      });
+    }
   }
 
   void _onItemTapped(int index) {
@@ -48,11 +61,40 @@ class _MainScreenMobileState extends State<MainScreenMobile> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    // Build pages list dynamically
+    List<Widget> pages = [..._basePages];
+    if (_isAdmin) {
+      pages.add(const AdminDashboardScreen()); // Index 5
+    }
+
+    // Determine Nav Index for highlighting
+    int navIndex = _selectedIndex;
+    if (_selectedIndex == 5) {
+      // Admin Page
+      navIndex = 4;
+    } else if (_selectedIndex == 4) {
+      // Forum Page (No Nav Item) -> Highlight Home (0) or first item
+      navIndex = 0;
+    }
+
     return Scaffold(
-      body: _pages[_selectedIndex],
+      body: pages.length > _selectedIndex ? pages[_selectedIndex] : pages[0],
       bottomNavigationBar: BottomNavbar(
-        selectedIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
+        selectedIndex: navIndex,
+        onItemTapped: (index) {
+          if (_isAdmin && index == 4) {
+            _onItemTapped(5); // Switch to Admin Dashboard
+          } else {
+            _onItemTapped(index);
+          }
+        },
+        isAdmin: _isAdmin,
       ),
     );
   }
