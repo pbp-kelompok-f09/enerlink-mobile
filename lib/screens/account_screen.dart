@@ -37,10 +37,6 @@ class _AccountScreenMobileState extends State<AccountScreenMobile> with WidgetsB
     final loggedIn = await ApiClient.isLoggedIn();
     if (!mounted) return;
     setState(() => isLoggedIn = loggedIn);
-
-    if (loggedIn && mounted) {
-      Navigator.pushReplacementNamed(context, '/dashboard');
-    }
   }
 
   Future<void> _logout() async {

@@ -33,7 +33,10 @@ class _MainScreenMobileState extends State<MainScreenMobile> {
       const CommunityListPage(), // Index 1: Community List
       const VenueListPage(), // Index 2: Venue List (From Venue Branch)
       const UserDashboardScreenMobile(), // Index 3: User Dashboard (From Dev Branch)
-      const PlaceholderPage(title: 'Forum', icon: Icons.forum_rounded), // Index 4: Forum (Placeholder)
+      const PlaceholderPage(
+        title: 'Forum',
+        icon: Icons.forum_rounded,
+      ), // Index 4: Forum (Placeholder)
     ];
   }
 
@@ -163,7 +166,8 @@ class _HomeContentState extends State<HomeContent> {
   @override
   Widget build(BuildContext context) {
     // Get display name or default
-    final displayName = _currentUser?.firstName ?? _currentUser?.username ?? 'Guest';
+    final displayName =
+        _currentUser?.firstName ?? _currentUser?.username ?? 'Guest';
 
     return Stack(
       children: [
@@ -181,7 +185,7 @@ class _HomeContentState extends State<HomeContent> {
             ),
           ),
         ),
-        
+
         // Decorative Circles (Refactored for cleaner code)
         Positioned(
           top: -100,
@@ -202,7 +206,7 @@ class _HomeContentState extends State<HomeContent> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 30),
-                
+
                 // Welcome Text
                 Text(
                   'Welcome $displayName,',
@@ -250,7 +254,7 @@ class _HomeContentState extends State<HomeContent> {
                           const Icon(Icons.search, color: Colors.white70),
                           const SizedBox(width: 12),
                           Text(
-                            'Find venues, communities...', 
+                            'Find venues, communities...',
                             style: TextStyle(
                               color: Colors.white.withAlpha(
                                 (255 * 0.7).round(),
@@ -370,7 +374,7 @@ class _HomeContentState extends State<HomeContent> {
 
                 // Bottom Banner
                 _buildBottomBanner(),
-                
+
                 const SizedBox(height: 30),
               ],
             ),
@@ -386,7 +390,7 @@ class _HomeContentState extends State<HomeContent> {
       margin: const EdgeInsets.only(right: 16),
       child: GestureDetector(
         onTap: () {
-           Navigator.push(
+          Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => VenueDetailPage(venueId: venue.idVenue),
@@ -411,24 +415,29 @@ class _HomeContentState extends State<HomeContent> {
                       ),
                       errorWidget: (context, url, error) => Container(
                         color: Colors.grey[300],
-                        child: const Icon(Icons.stadium, size: 50, color: Colors.grey),
+                        child: const Icon(
+                          Icons.stadium,
+                          size: 50,
+                          color: Colors.grey,
+                        ),
                       ),
                     )
                   : Container(
                       color: Colors.grey[300],
-                      child: const Icon(Icons.stadium, size: 50, color: Colors.grey),
+                      child: const Icon(
+                        Icons.stadium,
+                        size: 50,
+                        color: Colors.grey,
+                      ),
                     ),
-              
+
               // Gradient Overlay
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withAlpha(180),
-                    ],
+                    colors: [Colors.transparent, Colors.black.withAlpha(180)],
                     stops: const [0.6, 1.0],
                   ),
                 ),
@@ -498,7 +507,7 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   Widget _buildFeatureCard(
-    BuildContext context,    {
+    BuildContext context, {
     required String title,
     required IconData icon,
     required Color color1,

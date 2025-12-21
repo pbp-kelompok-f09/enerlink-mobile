@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:enerlink_mobile/models/community.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -77,7 +78,7 @@ class _CommunityEditPageState extends State<CommunityEditPage> {
       };
 
       final response = await request.postJson(
-        'http://127.0.0.1:8000/community/${widget.community.pk}/update-flutter/',
+        '${dotenv.env["BACKEND_URL"]}/community/${widget.community.pk}/update-flutter/',
         formData, // Kirim Map langsung, biarkan library yang encode
       );
 

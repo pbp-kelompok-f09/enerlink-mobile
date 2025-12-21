@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
 
 class CommunityCreatePage extends StatefulWidget {
@@ -80,7 +81,7 @@ class _CommunityCreatePageState extends State<CommunityCreatePage> {
       print('Sending JSON data: $jsonData');
 
       final response = await request.postJson(
-        'http://127.0.0.1:8000/community/create-flutter/',
+        '${dotenv.env["BACKEND_URL"]}/community/create-flutter/',
         jsonData,
       );
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:enerlink_mobile/models/community.dart';
 import 'package:enerlink_mobile/screens/community_edit.dart';
 
@@ -37,7 +38,7 @@ class _CommunityDetailPageState extends State<CommunityDetailPage> {
     // Load events
     try {
       final eventsResponse = await request.get(
-        'http://127.0.0.1:8000/community-events/json/${widget.community.pk}/'
+        '${dotenv.env["BACKEND_URL"]}/community-events/json/${widget.community.pk}/'
       );
       setState(() {
         _events = eventsResponse as List<dynamic>;
@@ -53,7 +54,7 @@ class _CommunityDetailPageState extends State<CommunityDetailPage> {
     // Load forum threads
     try {
       final forumResponse = await request.get(
-        'http://127.0.0.1:8000/community-forum/json/${widget.community.pk}/latest/'
+        '${dotenv.env["BACKEND_URL"]}/community-forum/json/${widget.community.pk}/latest/'
       );
       setState(() {
         _forumThreads = forumResponse as List<dynamic>;

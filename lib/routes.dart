@@ -35,35 +35,45 @@ class EnerlinkMobileRouter {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/': // Home (landing)
-        return MaterialPageRoute(builder: (_) => MainScreenMobile());
+        return MaterialPageRoute(builder: (context) => MainScreenMobile());
       case '/community': // placeholder
         return MaterialPageRoute(
-          builder: (_) => const _EmptyScreen(
+          builder: (context) => const _EmptyScreen(
             title: 'Community',
             note: 'TODO: Community belum tersedia',
           ),
         );
       case '/venues': // placeholder
         return MaterialPageRoute(
-          builder: (_) => const _EmptyScreen(
+          builder: (context) => const _EmptyScreen(
             title: 'Venues',
             note: 'TODO: Venues belum tersedia',
           ),
         );
       case '/account': // Account (guest: login/register; logged-in: dashboard)
-        return MaterialPageRoute(builder: (_) => const AccountScreenMobile());
+        return MaterialPageRoute(
+          builder: (context) => const AccountScreenMobile(),
+        );
       case '/dashboard': // alias
         return MaterialPageRoute(
-          builder: (_) => const MainScreenMobile(initialIndex: 3),
+          builder: (context) => const MainScreenMobile(initialIndex: 3),
         );
       case '/login':
-        return MaterialPageRoute(builder: (_) => const LoginScreenMobile());
+        return MaterialPageRoute(
+          builder: (context) => const LoginScreenMobile(),
+        );
       case '/register':
-        return MaterialPageRoute(builder: (_) => const RegisterScreenMobile());
+        return MaterialPageRoute(
+          builder: (context) => const RegisterScreenMobile(),
+        );
       case '/profile':
-        return MaterialPageRoute(builder: (_) => const ProfileScreenMobile());
+        return MaterialPageRoute(
+          builder: (context) => const ProfileScreenMobile(),
+        );
       default:
-        return MaterialPageRoute(builder: (_) => const NotFoundScreenMobile());
+        return MaterialPageRoute(
+          builder: (context) => const NotFoundScreenMobile(),
+        );
     }
   }
 }
