@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:pbp_django_auth/pbp_django_auth.dart';
-import 'package:provider/provider.dart';
 import 'package:enerlink_mobile/models/community.dart';
 import 'package:enerlink_mobile/widgets/community_card.dart';
 import 'package:enerlink_mobile/screens/community_create.dart';
 import 'package:enerlink_mobile/screens/community_join_confirmation.dart';
+import 'package:enerlink_mobile/services/api_client.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class CommunityListPage extends StatefulWidget {
   const CommunityListPage({super.key});
@@ -32,17 +33,27 @@ class _CommunityListPageState extends State<CommunityListPage> {
   }
 
   Future<void> _loadCommunities() async {
+    if (!mounted) return;
+    
     setState(() {
       _isLoading = true;
       _error = null;
     });
 
     try {
-      final request = context.read<CookieRequest>();
-      final response = await request.get('http://127.0.0.1:8000/community/json/');
+      final headers = await ApiClient.getAuthHeaders();
+      final url = "${ApiClient.baseUrl}/community/json/";
+      
+      final response = await http.get(Uri.parse(url), headers: headers);
+      
+      if (response.statusCode != 200) {
+        throw Exception('Failed to load communities: ${response.statusCode}');
+      }
+
+      final List<dynamic> data = json.decode(response.body);
       
       List<Community> communities = [];
-      for (var d in response) {
+      for (var d in data) {
         if (d != null) {
           communities.add(Community.fromJson(d));
         }
@@ -78,15 +89,19 @@ class _CommunityListPageState extends State<CommunityListPage> {
         return true;
       }).toList();
 
-      setState(() {
-        _communities = filtered;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _communities = filtered;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _error = e.toString();
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _error = e.toString();
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -387,6 +402,4 @@ class _CommunityListPageState extends State<CommunityListPage> {
       ),
     );
   }
-
-
 }
