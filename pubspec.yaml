@@ -79,8 +79,8 @@ flutter:
   uses-material-design: true
 
   assets:
-    - .env
-    - .env.prod
+    # - .env
+    # - .env.prod
     - lib/assets/images/noProfile.jpg
     - lib/assets/images/enerlink.png
     - lib/assets/images/blackBlueEnerlink.png
