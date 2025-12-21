@@ -35,7 +35,7 @@ dependencies:
   provider: ^6.1.1
   
   # Networking & API
-  http: ^1.2.0
+  http: ^1.6.0
   pbp_django_auth: ^0.4.0
   
   # Local Storage
@@ -48,6 +48,8 @@ dependencies:
   
   # Icons
   cupertino_icons: ^1.0.6
+  flutter_dotenv: ^6.0.0
+  image_picker: ^1.2.1
 
 dev_dependencies:
   flutter_test:
