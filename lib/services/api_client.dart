@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:enerlink_mobile/utils/constants.dart';
 
 class ApiClient {
   static http.Client client = http.Client();
@@ -12,13 +13,8 @@ class ApiClient {
   // static String baseUrl = 'http://127.0.0.1:8000'; // Hardcode sementara
 
   static String get baseUrl {
-  // Gunakan maybeGet agar tidak crash jika belum initialized
-  final envUrl = dotenv.maybeGet('BACKEND_URL');
-  if (envUrl != null) return envUrl;
-  
-  // Fallback ke localhost jika .env belum siap
-  return 'http://127.0.0.1:8000';
-}
+    return ApiConstants.baseUrl;
+  }
 
   static const String tokenKey = 'auth_token';
   static const Duration timeout = Duration(seconds: 15);
