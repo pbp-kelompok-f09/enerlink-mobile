@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../styles.dart';
 import '../../services/api_client.dart';
+import '../main_screen.dart'; // Import for MainScreenMobileState
 
 class UserDashboardScreenMobile extends StatefulWidget {
   const UserDashboardScreenMobile({super.key});
@@ -15,6 +16,7 @@ class _UserDashboardScreenMobileState extends State<UserDashboardScreenMobile> {
   String joinDate = '';
   String? avatarUrl;
   double walletBalance = 0;
+  String userRole = '';
 
   List<Map<String, dynamic>> recentActivities = [];
   List<Map<String, dynamic>> userEvents = [];
@@ -51,6 +53,7 @@ class _UserDashboardScreenMobileState extends State<UserDashboardScreenMobile> {
       setState(() {
         userName = '${data['first_name'] ?? ''} ${data['last_name'] ?? ''}'.trim();
         if (userName.isEmpty) userName = data['username'] ?? 'User';
+        userRole = data['role'] ?? '';
         joinDate = data['date_joined'] ?? '';
         
         // 🔄 CHANGED: Better avatar URL handling
@@ -312,6 +315,12 @@ class _UserDashboardScreenMobileState extends State<UserDashboardScreenMobile> {
                         ],
                       ),
                     ),
+                    if (userRole == 'AC' || userRole == 'DEV')
+                    IconButton(
+                      tooltip: 'Admin Panel',
+                      onPressed: () => Navigator.pushNamed(context, '/admin-dashboard'),
+                      icon: const Icon(Icons.admin_panel_settings, color: Colors.amber),
+                    ),
                     IconButton(
                       tooltip: 'Edit Profile',
                       onPressed: () async {
@@ -385,7 +394,11 @@ class _UserDashboardScreenMobileState extends State<UserDashboardScreenMobile> {
                               SizedBox(
                                 width: double.infinity,
                                 child: ElevatedButton.icon(
-                                  onPressed: () => Navigator.pushReplacementNamed(context, '/community'),
+                                  onPressed: () {
+                                    final state = context
+                                        .findAncestorStateOfType<MainScreenMobileState>();
+                                    state?.onItemTapped(1);
+                                  },
                                   icon: const Icon(Icons.search),
                                   label: const Text('Explore Communities'),
                                 ),
@@ -496,7 +509,11 @@ class _UserDashboardScreenMobileState extends State<UserDashboardScreenMobile> {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton.icon(
-                            onPressed: () => Navigator.pushReplacementNamed(context, '/community'),
+                            onPressed: () {
+                              final state = context
+                                  .findAncestorStateOfType<MainScreenMobileState>();
+                              state?.onItemTapped(1);
+                            },
                             icon: const Icon(Icons.search),
                             label: const Text('Find More Communities'),
                           ),

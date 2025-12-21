@@ -1,6 +1,7 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import '../../services/api_client.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class RegisterScreenMobile extends StatefulWidget {
   const RegisterScreenMobile({super.key});
@@ -44,46 +45,40 @@ class _RegisterScreenMobileState extends State<RegisterScreenMobile> {
     setState(() => _loading = true);
 
     try {
+      final request = context.read<CookieRequest>();
+      
       // Split name into first and last name
       final nameParts = _name.text.trim().split(' ');
       final firstName = nameParts.first;
       final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
       
-      final response = await ApiClient.register(
-        username: _username.text,
-        email: _email.text,
-        password: _password.text,
-        confirmPassword: _confirm.text,
-        firstName: firstName,
-        lastName: lastName,
+      final response = await request.post(
+        '${dotenv.env["BACKEND_URL"]}/api/auth/register/',
+        {
+          'username': _username.text,
+          'email': _email.text,
+          'password': _password.text,
+          'confirm_password': _confirm.text,
+          'first_name': firstName,
+          'last_name': lastName,
+        },
       );
 
       if (!mounted) return;
       setState(() => _loading = false);
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final data = jsonDecode(response.body);
-        if (data['success'] == true) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('✅ Registration successful! Please login.'),
-              backgroundColor: Colors.green,
-            ),
-          );
-          Navigator.pushReplacementNamed(context, '/login');
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(data['error'] ?? 'Registration failed'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
+      if (response['success'] == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✅ Registration successful! Please login.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.pushReplacementNamed(context, '/login');
       } else {
-        final data = jsonDecode(response.body);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(data['error'] ?? 'Registration failed'),
+            content: Text(response['error'] ?? 'Registration failed'),
             backgroundColor: Colors.red,
           ),
         );

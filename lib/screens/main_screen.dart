@@ -9,35 +9,54 @@ import 'package:enerlink_mobile/models/venue.dart';
 import 'package:enerlink_mobile/services/venue_service.dart';
 import 'package:enerlink_mobile/screens/venue_detail.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:enerlink_mobile/screens/admin_dashboard_screen.dart';
+import 'package:enerlink_mobile/services/community_service.dart';
+import 'package:enerlink_mobile/models/community.dart';
+import 'package:enerlink_mobile/screens/community_join_confirmation.dart';
 
 class MainScreenMobile extends StatefulWidget {
   final int initialIndex;
   const MainScreenMobile({super.key, this.initialIndex = 0});
 
   @override
-  State<MainScreenMobile> createState() => _MainScreenMobileState();
+  State<MainScreenMobile> createState() => MainScreenMobileState();
 }
 
-class _MainScreenMobileState extends State<MainScreenMobile> {
+class MainScreenMobileState extends State<MainScreenMobile> {
   late int _selectedIndex;
+  bool _isAdmin = false;
+  bool _isLoading = true;
 
-  // List of pages to switch between
-  late final List<Widget> _pages;
+  // List of base pages
+  final List<Widget> _basePages = [
+    const HomeContent(), // Index 0: Home
+    const CommunityListPage(), // Index 1: Community List
+    const VenueListPage(), // Index 2: Venue List
+    const UserDashboardScreenMobile(), // Index 3: User Dashboard
+    const PlaceholderPage(
+      title: 'Forum',
+      icon: Icons.forum_rounded,
+    ), // Index 4: Forum
+  ];
 
   @override
   void initState() {
     super.initState();
     _selectedIndex = widget.initialIndex;
-    _pages = [
-      const HomeContent(), // Index 0: Home (The Dashboard)
-      const CommunityListPage(), // Index 1: Community List
-      const VenueListPage(), // Index 2: Venue List (From Venue Branch)
-      const UserDashboardScreenMobile(), // Index 3: User Dashboard (From Dev Branch)
-      const PlaceholderPage(title: 'Forum', icon: Icons.forum_rounded), // Index 4: Forum (Placeholder)
-    ];
+    _checkUser();
   }
 
-  void _onItemTapped(int index) {
+  Future<void> _checkUser() async {
+    final user = await AuthService.getCurrentUser();
+    if (mounted) {
+      setState(() {
+        _isAdmin = user != null && (user.isSuperuser || user.isStaff);
+        _isLoading = false;
+      });
+    }
+  }
+
+  void onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
@@ -45,22 +64,40 @@ class _MainScreenMobileState extends State<MainScreenMobile> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    // Build pages list dynamically
+    List<Widget> pages = [..._basePages];
+    if (_isAdmin) {
+      pages.add(const AdminDashboardScreen()); // Index 5
+    }
+
+    // Determine Nav Index for highlighting
+    int navIndex = _selectedIndex;
+    if (_selectedIndex == 5) {
+      // Admin Page
+      navIndex = 4;
+    } else if (_selectedIndex == 4) {
+      // Forum Page (No Nav Item) -> Highlight Home (0) or first item
+      navIndex = 0;
+    }
+
     return Scaffold(
-      // No AppBar or Drawer anymore as requested for a cleaner, modern look
-      // extendBodyBehindAppBar: _selectedIndex == 0, // No AppBar, so no need to extend body
-
-      // This is the "Body" that changes based on bottom nav selection
-      body: _pages[_selectedIndex],
-
+      body: pages.length > _selectedIndex ? pages[_selectedIndex] : pages[0],
       bottomNavigationBar: BottomNavbar(
         selectedIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
+        onItemTapped: onItemTapped,
       ),
     );
   }
 }
 
 // --- WIDGETS FOR PAGES ---
+// --- Test Changes ---
 
 // 1. The Main Home Dashboard (Refactored from previous code)
 class HomeContent extends StatefulWidget {
@@ -74,12 +111,15 @@ class _HomeContentState extends State<HomeContent> {
   User? _currentUser;
   List<Venue> _featuredVenues = [];
   bool _isLoadingVenues = true;
+  List<Community> _featuredCommunities = [];
+  bool _isLoadingCommunities = true;
 
   @override
   void initState() {
     super.initState();
     _loadUser();
     _loadFeaturedVenues();
+    _loadCommunities();
   }
 
   Future<void> _loadUser() async {
@@ -109,10 +149,98 @@ class _HomeContentState extends State<HomeContent> {
     }
   }
 
+  Future<void> _loadCommunities() async {
+    try {
+      final communities = await CommunityService.getCommunities();
+      if (mounted) {
+        setState(() {
+          _featuredCommunities = communities.take(5).toList();
+          _isLoadingCommunities = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isLoadingCommunities = false);
+    }
+  }
+
+  Future<void> _joinCommunity(Community community) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            CommunityJoinConfirmationPage(community: community),
+      ),
+    );
+    if (result == true) {
+      // Refresh list if join was successful
+      _loadCommunities();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Successfully joined community!')),
+      );
+    }
+  }
+
+  Widget _buildDecorativeCircle(double size, double opacity) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white.withAlpha((255 * opacity).round()),
+      ),
+    );
+  }
+
+  Widget _buildBottomBanner() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white.withAlpha((255 * 0.1).round()),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withAlpha((255 * 0.1).round())),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white.withAlpha((255 * 0.2).round()),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.notifications_active, color: Colors.white),
+          ),
+          const SizedBox(width: 16),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Don\'t miss out!',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'Check upcoming events near you.',
+                  style: TextStyle(color: Colors.white70, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Get display name or default
-    final displayName = _currentUser?.firstName ?? _currentUser?.username ?? 'Guest';
+    final displayName =
+        _currentUser?.firstName ?? _currentUser?.username ?? 'Guest';
 
     return Stack(
       children: [
@@ -130,30 +258,17 @@ class _HomeContentState extends State<HomeContent> {
             ),
           ),
         ),
-        // Decorative Circles
+
+        // Decorative Circles (Refactored for cleaner code)
         Positioned(
           top: -100,
           right: -100,
-          child: Container(
-            width: 300,
-            height: 300,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withAlpha((255 * 0.1).round()),
-            ),
-          ),
+          child: _buildDecorativeCircle(300, 0.1),
         ),
         Positioned(
           bottom: 50,
           left: -50,
-          child: Container(
-            width: 200,
-            height: 200,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withAlpha((255 * 0.05).round()),
-            ),
-          ),
+          child: _buildDecorativeCircle(200, 0.05),
         ),
 
         // 2. Main Content
@@ -163,9 +278,8 @@ class _HomeContentState extends State<HomeContent> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // SizedBox to push content down a bit, compensating for removed AppBar
                 const SizedBox(height: 30),
-                
+
                 // Welcome Text
                 Text(
                   'Welcome $displayName,',
@@ -213,7 +327,7 @@ class _HomeContentState extends State<HomeContent> {
                           const Icon(Icons.search, color: Colors.white70),
                           const SizedBox(width: 12),
                           Text(
-                            'Find venues, communities...', 
+                            'Find venues, communities...',
                             style: TextStyle(
                               color: Colors.white.withAlpha(
                                 (255 * 0.7).round(),
@@ -253,7 +367,32 @@ class _HomeContentState extends State<HomeContent> {
                   const SizedBox(height: 30),
                 ],
 
-                // Categories / Menu Grid
+                // Featured Communities Carousel
+                if (!_isLoadingCommunities && _featuredCommunities.isNotEmpty) ...[
+                  Text(
+                    'Join a Community',
+                    style: TextStyle(
+                      color: Colors.white.withAlpha((255 * 0.9).round()),
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    height: 180,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _featuredCommunities.length,
+                      itemBuilder: (context, index) {
+                        final community = _featuredCommunities[index];
+                        return _buildCommunityCard(context, community);
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                ],
+
+                // Menu Grid
                 Text(
                   'Explore',
                   style: TextStyle(
@@ -281,8 +420,8 @@ class _HomeContentState extends State<HomeContent> {
                       onTap: () {
                         // Switch to Communities Tab (Index 1)
                         final state = context
-                            .findAncestorStateOfType<_MainScreenMobileState>();
-                        state?._onItemTapped(1);
+                            .findAncestorStateOfType<MainScreenMobileState>();
+                        state?.onItemTapped(1);
                       },
                     ),
                     _buildFeatureCard(
@@ -295,8 +434,8 @@ class _HomeContentState extends State<HomeContent> {
                       onTap: () {
                         // Switch to Venues Tab (Index 2)
                         final state = context
-                            .findAncestorStateOfType<_MainScreenMobileState>();
-                        state?._onItemTapped(2);
+                            .findAncestorStateOfType<MainScreenMobileState>();
+                        state?.onItemTapped(2);
                       },
                     ),
                     _buildFeatureCard(
@@ -309,8 +448,8 @@ class _HomeContentState extends State<HomeContent> {
                       onTap: () {
                         // Switch to User Dashboard Tab (Index 3) where Events are shown
                         final state = context
-                            .findAncestorStateOfType<_MainScreenMobileState>();
-                        state?._onItemTapped(3);
+                            .findAncestorStateOfType<MainScreenMobileState>();
+                        state?.onItemTapped(3);
                       },
                     ),
                     _buildFeatureCard(
@@ -322,8 +461,8 @@ class _HomeContentState extends State<HomeContent> {
                       onTap: () {
                         // Switch to Forum Tab (Index 4)
                         final state = context
-                            .findAncestorStateOfType<_MainScreenMobileState>();
-                        state?._onItemTapped(4);
+                            .findAncestorStateOfType<MainScreenMobileState>();
+                        state?.onItemTapped(4);
                       },
                     ),
                   ],
@@ -331,57 +470,9 @@ class _HomeContentState extends State<HomeContent> {
 
                 const SizedBox(height: 30),
 
-                // Bottom Banner / Activity
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withAlpha((255 * 0.1).round()),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: Colors.white.withAlpha((255 * 0.1).round()),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withAlpha((255 * 0.2).round()),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.notifications_active,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Don\'t miss out!',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Check upcoming events near you.',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                // Bottom Banner
+                _buildBottomBanner(),
+
                 const SizedBox(height: 30),
               ],
             ),
@@ -397,7 +488,7 @@ class _HomeContentState extends State<HomeContent> {
       margin: const EdgeInsets.only(right: 16),
       child: GestureDetector(
         onTap: () {
-           Navigator.push(
+          Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => VenueDetailPage(venueId: venue.idVenue),
@@ -422,24 +513,29 @@ class _HomeContentState extends State<HomeContent> {
                       ),
                       errorWidget: (context, url, error) => Container(
                         color: Colors.grey[300],
-                        child: const Icon(Icons.stadium, size: 50, color: Colors.grey),
+                        child: const Icon(
+                          Icons.stadium,
+                          size: 50,
+                          color: Colors.grey,
+                        ),
                       ),
                     )
                   : Container(
                       color: Colors.grey[300],
-                      child: const Icon(Icons.stadium, size: 50, color: Colors.grey),
+                      child: const Icon(
+                        Icons.stadium,
+                        size: 50,
+                        color: Colors.grey,
+                      ),
                     ),
-              
+
               // Gradient Overlay
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withAlpha(180),
-                    ],
+                    colors: [Colors.transparent, Colors.black.withAlpha(180)],
                     stops: const [0.6, 1.0],
                   ),
                 ),
@@ -508,8 +604,110 @@ class _HomeContentState extends State<HomeContent> {
     );
   }
 
+  Widget _buildCommunityCard(BuildContext context, Community community) {
+    return Container(
+      width: 240,
+      margin: const EdgeInsets.only(right: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha((255 * 0.1).round()),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Color(0xFFE3F2FD),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+              ),
+              child: Center(
+                child: Icon(
+                  Icons.groups_rounded,
+                  size: 48,
+                  color: Colors.blue[700],
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  community.fields.title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  community.fields.description,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.black54,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.person, size: 14, color: Colors.grey),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${community.fields.totalMembers} Members',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 28,
+                      child: ElevatedButton(
+                        onPressed: () => _joinCommunity(community),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue[700],
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        child: const Text(
+                          'Join',
+                          style: TextStyle(fontSize: 12, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildFeatureCard(
-    BuildContext context,    {
+    BuildContext context, {
     required String title,
     required IconData icon,
     required Color color1,
@@ -566,7 +764,7 @@ class _HomeContentState extends State<HomeContent> {
   }
 }
 
-// 2. Placeholder Page for other tabs
+// 3. Placeholder Page for other tabs
 class PlaceholderPage extends StatelessWidget {
   final String title;
   final IconData icon;
@@ -576,8 +774,7 @@ class PlaceholderPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          Colors.white, // Ensure other pages have a clear background
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           title,

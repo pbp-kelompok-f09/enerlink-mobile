@@ -1,3 +1,4 @@
+import 'package:enerlink_mobile/services/api_client.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../models/venue.dart';
@@ -18,10 +19,19 @@ class _VenueListPageState extends State<VenueListPage> {
   @override
   void initState() {
     super.initState();
-    _loadVenues();
+    _checkLoginAndLoadVenues();
     _searchController.addListener(() {
-      setState(() {}); // Rebuild to update suffixIcon
+      setState(() {});
     });
+  }
+
+  Future<void> _checkLoginAndLoadVenues() async {
+    final loggedIn = await ApiClient.isLoggedIn();
+    if (!loggedIn && mounted) {
+      Navigator.pushReplacementNamed(context, '/login');
+      return;
+    }
+    _loadVenues();
   }
 
   void _loadVenues({String? search}) {

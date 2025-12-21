@@ -37,10 +37,6 @@ class _AccountScreenMobileState extends State<AccountScreenMobile> with WidgetsB
     final loggedIn = await ApiClient.isLoggedIn();
     if (!mounted) return;
     setState(() => isLoggedIn = loggedIn);
-
-    if (loggedIn && mounted) {
-      Navigator.pushReplacementNamed(context, '/dashboard');
-    }
   }
 
   void _onBottomNavTapped(int index) {
@@ -119,7 +115,12 @@ class _AccountScreenMobileState extends State<AccountScreenMobile> with WidgetsB
     return Scaffold(
       bottomNavigationBar: BottomNavbar(
         selectedIndex: bottomIndex,
-        onItemTapped: _onBottomNavTapped,
+        onItemTapped: (i) {
+          setState(() => bottomIndex = i);
+          if (i == 0) Navigator.pushReplacementNamed(context, '/');
+          if (i == 1) Navigator.pushNamed(context, '/community');
+          if (i == 2) Navigator.pushNamed(context, '/venues');
+        },
       ),
       body: Container(
         decoration: const BoxDecoration(

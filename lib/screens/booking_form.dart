@@ -64,10 +64,14 @@ class _BookingFormPageState extends State<BookingFormPage> {
   Future<void> _selectEndTime() async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: _endTime ?? TimeOfDay(
-        hour: _startTime != null ? (_startTime!.hour + 1) : TimeOfDay.now().hour + 1,
-        minute: 0,
-      ),
+      initialTime:
+          _endTime ??
+          TimeOfDay(
+            hour: _startTime != null
+                ? (_startTime!.hour + 1)
+                : TimeOfDay.now().hour + 1,
+            minute: 0,
+          ),
     );
     if (picked != null) {
       if (_startTime != null && picked.hour <= _startTime!.hour) {
@@ -106,8 +110,10 @@ class _BookingFormPageState extends State<BookingFormPage> {
 
     try {
       final bookingDate = DateFormat('yyyy-MM-dd').format(_selectedDate!);
-      final startTimeStr = '${_startTime!.hour.toString().padLeft(2, '0')}:${_startTime!.minute.toString().padLeft(2, '0')}:00';
-      final endTimeStr = '${_endTime!.hour.toString().padLeft(2, '0')}:${_endTime!.minute.toString().padLeft(2, '0')}:00';
+      final startTimeStr =
+          '${_startTime!.hour.toString().padLeft(2, '0')}:${_startTime!.minute.toString().padLeft(2, '0')}:00';
+      final endTimeStr =
+          '${_endTime!.hour.toString().padLeft(2, '0')}:${_endTime!.minute.toString().padLeft(2, '0')}:00';
 
       await VenueService.createBooking(
         venueId: widget.venueId,
@@ -354,8 +360,9 @@ class _BookingFormPageState extends State<BookingFormPage> {
                                 width: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor:
-                                      AlwaysStoppedAnimation<Color>(Colors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
                                 ),
                               )
                             : const Text(
@@ -410,4 +417,3 @@ class _BookingFormPageState extends State<BookingFormPage> {
     }
   }
 }
-
