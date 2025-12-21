@@ -198,3 +198,5 @@ Database Postgres
 ## Link 
 - Alur Sheets: https://docs.google.com/spreadsheets/d/1zH-FyHCWx9a6bBGQ5zgjocIm-GUWxTVqYs0H9DE2wIo/edit?gid=0#gid=0
 - PWS: https://vazha-khayri-enerlink.pbp.cs.ui.ac.id/
+- demo aplikasi: https://youtu.be/v_xhNjzg5e4?si=naYKCCQA6CM0Um_7
+- aplikasi mobile bitrise: https://app.bitrise.io/app/ecec35fe-938f-4e5a-854a-3385c5cc481b/installable-artifacts/ddff8abb31b867ba/public-install-page/49f06bb4f1e45f444f4aa727c47a98ee
