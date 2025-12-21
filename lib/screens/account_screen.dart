@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/api_client.dart';
-import '../widgets/bottom_bar.dart';
+import '../widgets/bottom_navbar.dart';
 
 class AccountScreenMobile extends StatefulWidget {
   const AccountScreenMobile({super.key});
@@ -130,9 +130,9 @@ class _AccountScreenMobileState extends State<AccountScreenMobile> with WidgetsB
           );
 
     return Scaffold(
-      bottomNavigationBar: MobileBottomNav(
-        currentIndex: bottomIndex,
-        onTap: (i) {
+      bottomNavigationBar: BottomNavbar(
+        selectedIndex: bottomIndex,
+        onItemTapped: (i) {
           setState(() => bottomIndex = i);
           if (i == 0) Navigator.pushReplacementNamed(context, '/');
           if (i == 1) Navigator.pushNamed(context, '/community');

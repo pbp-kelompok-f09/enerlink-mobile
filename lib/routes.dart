@@ -6,6 +6,7 @@ import 'package:enerlink_mobile/screens/admin_dashboard_screen.dart'; // Import 
 import 'screens/auth/register_screen.dart';
 import 'screens/account_screen.dart';
 import 'screens/profile_screen.dart';
+// import 'package:enerlink_mobile/screens/community_list.dart'; // No longer needed if we reuse MainScreenMobile
 
 class _EmptyScreen extends StatelessWidget {
   final String title;
@@ -37,19 +38,13 @@ class EnerlinkMobileRouter {
     switch (settings.name) {
       case '/': // Home (landing)
         return MaterialPageRoute(builder: (context) => MainScreenMobile());
-      case '/community': // placeholder
+      case '/community': 
         return MaterialPageRoute(
-          builder: (context) => const _EmptyScreen(
-            title: 'Community',
-            note: 'TODO: Community belum tersedia',
-          ),
+          builder: (context) => const MainScreenMobile(initialIndex: 1),
         );
       case '/venues': // placeholder
         return MaterialPageRoute(
-          builder: (context) => const _EmptyScreen(
-            title: 'Venues',
-            note: 'TODO: Venues belum tersedia',
-          ),
+          builder: (context) => const MainScreenMobile(initialIndex: 2),
         );
       case '/account': // Account (guest: login/register; logged-in: dashboard)
         return MaterialPageRoute(

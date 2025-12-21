@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../styles.dart';
 import '../../services/api_client.dart';
+import '../main_screen.dart'; // Import for MainScreenMobileState
 
 class UserDashboardScreenMobile extends StatefulWidget {
   const UserDashboardScreenMobile({super.key});
@@ -391,7 +392,11 @@ class _UserDashboardScreenMobileState extends State<UserDashboardScreenMobile> {
                               SizedBox(
                                 width: double.infinity,
                                 child: ElevatedButton.icon(
-                                  onPressed: () => Navigator.pushNamed(context, '/community'),
+                                  onPressed: () {
+                                    final state = context
+                                        .findAncestorStateOfType<MainScreenMobileState>();
+                                    state?.onItemTapped(1);
+                                  },
                                   icon: const Icon(Icons.search),
                                   label: const Text('Explore Communities'),
                                 ),
@@ -502,7 +507,11 @@ class _UserDashboardScreenMobileState extends State<UserDashboardScreenMobile> {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton.icon(
-                            onPressed: () => Navigator.pushNamed(context, '/community'),
+                            onPressed: () {
+                              final state = context
+                                  .findAncestorStateOfType<MainScreenMobileState>();
+                              state?.onItemTapped(1);
+                            },
                             icon: const Icon(Icons.search),
                             label: const Text('Find More Communities'),
                           ),
