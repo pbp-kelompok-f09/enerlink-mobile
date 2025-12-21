@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'screens/main_screen.dart';
-import 'screens/dashboard/user_dashboard_screen.dart';
 import 'screens/not_found_screen.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/register_screen.dart';
@@ -32,11 +31,11 @@ class EnerlinkMobileRouter {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/': // Home (landing)
-        return MaterialPageRoute(builder: (_) => MainScreenMobile());
+        return MaterialPageRoute(builder: (_) => const MainScreenMobile());
       case '/community': // placeholder
-        return MaterialPageRoute(builder: (_) => const _EmptyScreen(title: 'Community', note: 'TODO: Community belum tersedia'));
+        return MaterialPageRoute(builder: (_) => const MainScreenMobile(initialIndex: 1));
       case '/venues': // placeholder
-        return MaterialPageRoute(builder: (_) => const _EmptyScreen(title: 'Venues', note: 'TODO: Venues belum tersedia'));
+        return MaterialPageRoute(builder: (_) => const MainScreenMobile(initialIndex: 2));
       case '/account': // Account (guest: login/register; logged-in: dashboard)
         return MaterialPageRoute(builder: (_) => const AccountScreenMobile());
       case '/dashboard': // alias
