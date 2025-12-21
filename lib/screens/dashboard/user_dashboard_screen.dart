@@ -15,6 +15,7 @@ class _UserDashboardScreenMobileState extends State<UserDashboardScreenMobile> {
   String joinDate = '';
   String? avatarUrl;
   double walletBalance = 0;
+  String userRole = '';
 
   List<Map<String, dynamic>> recentActivities = [];
   List<Map<String, dynamic>> userEvents = [];
@@ -50,6 +51,7 @@ class _UserDashboardScreenMobileState extends State<UserDashboardScreenMobile> {
       setState(() {
         userName = '${data['first_name'] ?? ''} ${data['last_name'] ?? ''}'.trim();
         if (userName.isEmpty) userName = data['username'] ?? 'User';
+        userRole = data['role'] ?? '';
         joinDate = data['date_joined'] ?? '';
         
         // 🔄 CHANGED: Better avatar URL handling
@@ -309,6 +311,12 @@ class _UserDashboardScreenMobileState extends State<UserDashboardScreenMobile> {
                           Text('Welcome $userName', style: const TextStyle(color: Colors.white70)),
                         ],
                       ),
+                    ),
+                    if (userRole == 'AC' || userRole == 'DEV')
+                    IconButton(
+                      tooltip: 'Admin Panel',
+                      onPressed: () => Navigator.pushNamed(context, '/admin-dashboard'),
+                      icon: const Icon(Icons.admin_panel_settings, color: Colors.amber),
                     ),
                     IconButton(
                       tooltip: 'Edit Profile',

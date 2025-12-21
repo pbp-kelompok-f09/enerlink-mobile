@@ -1,73 +1,114 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:pbp_django_auth/pbp_django_auth.dart';
-import 'package:provider/provider.dart';
-import 'routes.dart';
+import 'package:provider/provider.dart'; // 1. Import Provider
+import 'package:pbp_django_auth/pbp_django_auth.dart'; // 2. Import CookieRequest
+
+// Import screen dan provider dashboard kamu
+// ⚠️ Pastikan path import ini sesuai dengan folder kamu
+import 'package:enerlink_mobile/modules/admin_dashboard/screens/admin_dashboard_screen.dart'; 
+import 'package:enerlink_mobile/modules/admin_dashboard/providers/admin_dashboard_provider.dart';
 
 Future<void> main() async {
-  await dotenv.load(fileName: kReleaseMode ? ".env.prod" : ".env");
-  runApp(Provider(create: (_) => CookieRequest(), child: const EnerlinkApp()));
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
+  runApp(const MyApp());
 }
 
-class EnerlinkApp extends StatelessWidget {
-  const EnerlinkApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    const primaryBlue = Color(0xFF2563EB);
-    const yellow = Color(0xFFFACC15);
+    // 3. Bungkus MaterialApp dengan MultiProvider
+    return MultiProvider(
+      providers: [
+        // Provider A: Untuk menangani sesi Login & Cookie (Wajib di PBP)
+        Provider(
+          create: (_) {
+            CookieRequest request = CookieRequest();
+            return request;
+          },
+        ),
 
-    return MaterialApp(
-      title: 'Enerlink',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: const ColorScheme(
-          brightness: Brightness.light,
-          primary: primaryBlue,
-          onPrimary: Colors.white,
-          secondary: yellow,
-          onSecondary: Colors.black,
-          error: Colors.red,
-          onError: Colors.white,
-          surface: Colors.white,
-          onSurface: Color(0xFF111827),
+        // Provider B: "Pelayan" untuk Admin Dashboard
+        // Ini biar state dashboard (loading/data) tersimpan meski pindah halaman
+        ChangeNotifierProvider(
+          create: (_) => AdminDashboardProvider(),
         ),
-        scaffoldBackgroundColor: const Color(0xFF0EA5E9),
-        textTheme: const TextTheme(
-          headlineMedium: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.w800,
-            color: Colors.white,
-          ),
-          titleMedium: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-          ),
-          bodyMedium: TextStyle(fontSize: 14, color: Colors.white),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Enerlink Admin',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
         ),
-        // FIX: CardThemeData (not CardTheme)
-        cardTheme: const CardThemeData(
-          color: Colors.white,
-          elevation: 8,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-          ),
-          shadowColor: Color(0x26000000), // ~15% black
-        ),
-        navigationBarTheme: const NavigationBarThemeData(
-          backgroundColor: Color(0xFF0EA5E9),
-          indicatorColor: Color(0x33FFFFFF),
-          labelTextStyle: WidgetStatePropertyAll(
-            TextStyle(color: Colors.white),
-          ),
-          iconTheme: WidgetStatePropertyAll(IconThemeData(color: Colors.white)),
+        
+        initialRoute: '/',
+        routes: {
+          '/': (context) => const MyHomePage(title: 'Enerlink Home'),
+          
+          // 4. Arahkan rute '/admin' langsung ke Screen Dashboard yang sudah kita buat
+          '/admin': (context) => const AdminDashboardScreen(), 
+        },
+      ),
+    );
+  }
+}
+
+// --- Di bawah ini kode template bawaan Flutter (Home Page Counter) ---
+// --- Biarkan saja dulu sebagai halaman awal ---
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+  final String title;
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  int _counter = 0;
+
+  void _incrementCounter() {
+    setState(() {
+      _counter++;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text('You have pushed the button this many times:'),
+            Text(
+              '$_counter',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 20),
+            
+            // Tombol pintas ke Admin Dashboard (Buat Testing)
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/admin');
+              },
+              child: const Text("Go to Admin Dashboard"),
+            ),
+          ],
         ),
       ),
-      initialRoute: '/',
-      onGenerateRoute: EnerlinkMobileRouter.onGenerateRoute,
+      floatingActionButton: FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
