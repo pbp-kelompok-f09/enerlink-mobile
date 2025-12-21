@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+// Ensure these imports match your actual file structure
 import '../models/booking.dart';
 import '../services/venue_service.dart';
 
@@ -26,23 +27,10 @@ class _BookingListPageState extends State<BookingListPage> {
     });
   }
 
-  Color _getStatusColor(String status) {
-    switch (status.toUpperCase()) {
-      case 'PENDING':
-        return Colors.orange;
-      case 'CONFIRMED':
-        return Colors.green;
-      case 'CANCELLED':
-        return Colors.red;
-      case 'COMPLETED':
-        return Colors.blue;
-      default:
-        return Colors.grey;
-    }
-  }
-
+  // --- ADDED: Missing cancel logic ---
   Future<void> _cancelBooking(String bookingId) async {
-    final confirm = await showDialog<bool>(
+    // 1. Show Confirmation Dialog
+    final bool? confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Cancel Booking'),
@@ -60,28 +48,33 @@ class _BookingListPageState extends State<BookingListPage> {
       ),
     );
 
-    if (confirm == true) {
-      try {
-        await VenueService.cancelBooking(bookingId);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Booking cancelled successfully'),
-              backgroundColor: Colors.green,
-            ),
-          );
-          _loadBookings();
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error: ${e.toString()}'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      }
+    if (confirm != true) return;
+
+    // 2. Call API
+    try {
+      // NOTE: Ensure your VenueService has a static cancelBooking(id) method
+      // If it doesn't exist yet, you need to add it to venue_service.dart
+      await VenueService.cancelBooking(bookingId);
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Booking cancelled successfully'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // 3. Refresh the list
+      _loadBookings();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to cancel: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -101,10 +94,7 @@ class _BookingListPageState extends State<BookingListPage> {
         elevation: 0,
         iconTheme: const IconThemeData(color: Color(0xFF0D47A1)),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadBookings,
-          ),
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _loadBookings),
         ],
       ),
       body: FutureBuilder<BookingResponse>(
@@ -146,18 +136,11 @@ class _BookingListPageState extends State<BookingListPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(
-                    Icons.event_busy,
-                    size: 64,
-                    color: Colors.grey,
-                  ),
+                  const Icon(Icons.event_busy, size: 64, color: Colors.grey),
                   const SizedBox(height: 16),
                   const Text(
                     "No bookings yet",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey,
-                    ),
+                    style: TextStyle(fontSize: 18, color: Colors.grey),
                   ),
                 ],
               ),
@@ -174,6 +157,7 @@ class _BookingListPageState extends State<BookingListPage> {
                   final booking = snapshot.data!.dataList![index];
                   return _BookingCard(
                     booking: booking,
+                    // Pass the function correctly
                     onCancel: () => _cancelBooking(booking.id),
                   );
                 },
@@ -190,10 +174,7 @@ class _BookingCard extends StatelessWidget {
   final Booking booking;
   final VoidCallback onCancel;
 
-  const _BookingCard({
-    required this.booking,
-    required this.onCancel,
-  });
+  const _BookingCard({required this.booking, required this.onCancel});
 
   Color _getStatusColor(String status) {
     switch (status.toUpperCase()) {
@@ -211,54 +192,23 @@ class _BookingCard extends StatelessWidget {
   }
 
   Widget _buildImageWidget(String imageUrl, double size) {
-    // Try Image.network first (better for web), fallback to CachedNetworkImage
-    return SizedBox(
+    // Simplified: CachedNetworkImage handles caching and errors better than manual implementation
+    return CachedNetworkImage(
+      imageUrl: imageUrl,
       width: size,
       height: size,
-      child: Image.network(
-        imageUrl,
-        fit: BoxFit.cover,
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) return child;
-          return Container(
-            width: size,
-            height: size,
-            color: Colors.grey[300],
-            child: Center(
-              child: CircularProgressIndicator(
-                value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded /
-                        loadingProgress.expectedTotalBytes!
-                    : null,
-              ),
-            ),
-          );
-        },
-        errorBuilder: (context, error, stackTrace) {
-          // If Image.network fails, try CachedNetworkImage as fallback
-          return CachedNetworkImage(
-            imageUrl: imageUrl,
-            width: size,
-            height: size,
-            fit: BoxFit.cover,
-            httpHeaders: const {
-              'Accept': 'image/*',
-              'User-Agent': 'Mozilla/5.0',
-            },
-            placeholder: (context, url) => Container(
-              width: size,
-              height: size,
-              color: Colors.grey[300],
-              child: const Center(child: CircularProgressIndicator()),
-            ),
-            errorWidget: (context, url, error) => Container(
-              width: size,
-              height: size,
-              color: Colors.grey[300],
-              child: const Icon(Icons.image_not_supported, size: 32),
-            ),
-          );
-        },
+      fit: BoxFit.cover,
+      placeholder: (context, url) => Container(
+        width: size,
+        height: size,
+        color: Colors.grey[300],
+        child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+      ),
+      errorWidget: (context, url, error) => Container(
+        width: size,
+        height: size,
+        color: Colors.grey[300],
+        child: const Icon(Icons.image_not_supported, color: Colors.grey),
       ),
     );
   }
@@ -266,14 +216,11 @@ class _BookingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('yyyy-MM-dd');
-    final timeFormat = DateFormat('HH:mm');
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -284,8 +231,8 @@ class _BookingCard extends StatelessWidget {
               children: [
                 if (booking.venue.imageUrl != null &&
                     booking.venue.imageUrl!.isNotEmpty &&
-                    (booking.venue.imageUrl!.startsWith('http://') || 
-                     booking.venue.imageUrl!.startsWith('https://')))
+                    (booking.venue.imageUrl!.startsWith('http://') ||
+                        booking.venue.imageUrl!.startsWith('https://')))
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: _buildImageWidget(booking.venue.imageUrl!, 80),
@@ -298,7 +245,11 @@ class _BookingCard extends StatelessWidget {
                       color: Colors.grey[300],
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(Icons.stadium),
+                    child: const Icon(
+                      Icons.stadium,
+                      size: 40,
+                      color: Colors.grey,
+                    ),
                   ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -325,6 +276,7 @@ class _BookingCard extends StatelessWidget {
                         ),
                         backgroundColor: _getStatusColor(booking.status),
                         padding: EdgeInsets.zero,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                     ],
                   ),
@@ -369,7 +321,7 @@ class _BookingCard extends StatelessWidget {
               ],
             ),
             // Cancel Button (only for PENDING)
-            if (booking.status == 'PENDING') ...[
+            if (booking.status.toUpperCase() == 'PENDING') ...[
               const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
@@ -392,4 +344,3 @@ class _BookingCard extends StatelessWidget {
     );
   }
 }
-

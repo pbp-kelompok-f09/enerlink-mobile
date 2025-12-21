@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:intl/intl.dart';
 import '../models/venue.dart';
 import '../services/venue_service.dart';
 import '../services/api_client.dart';
