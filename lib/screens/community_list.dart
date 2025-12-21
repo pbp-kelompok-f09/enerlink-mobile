@@ -34,7 +34,7 @@ class _CommunityListPageState extends State<CommunityListPage> {
 
   Future<void> _loadCommunities() async {
     if (!mounted) return;
-    
+
     setState(() {
       _isLoading = true;
       _error = null;
@@ -43,15 +43,15 @@ class _CommunityListPageState extends State<CommunityListPage> {
     try {
       final headers = await ApiClient.getAuthHeaders();
       final url = "${ApiClient.baseUrl}/community/json/";
-      
+
       final response = await http.get(Uri.parse(url), headers: headers);
-      
+
       if (response.statusCode != 200) {
         throw Exception('Failed to load communities: ${response.statusCode}');
       }
 
       final List<dynamic> data = json.decode(response.body);
-      
+
       List<Community> communities = [];
       for (var d in data) {
         if (d != null) {
@@ -62,7 +62,7 @@ class _CommunityListPageState extends State<CommunityListPage> {
       // Apply filters
       List<Community> filtered = communities.where((community) {
         final fields = community.fields;
-        
+
         // Search filter
         if (_searchQuery.isNotEmpty) {
           final query = _searchQuery.toLowerCase();
@@ -122,7 +122,8 @@ class _CommunityListPageState extends State<CommunityListPage> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CommunityJoinConfirmationPage(community: community),
+        builder: (context) =>
+            CommunityJoinConfirmationPage(community: community),
       ),
     );
     if (result == true) {
@@ -216,10 +217,12 @@ class _CommunityListPageState extends State<CommunityListPage> {
                             value: null,
                             child: Text('All Categories'),
                           ),
-                          ..._sportCategories.map((category) => DropdownMenuItem(
-                            value: category,
-                            child: Text(category),
-                          )),
+                          ..._sportCategories.map(
+                            (category) => DropdownMenuItem(
+                              value: category,
+                              child: Text(category),
+                            ),
+                          ),
                         ],
                         onChanged: (value) {
                           setState(() {
@@ -247,10 +250,12 @@ class _CommunityListPageState extends State<CommunityListPage> {
                             value: null,
                             child: Text('All Cities'),
                           ),
-                          ..._cities.map((city) => DropdownMenuItem(
-                            value: city,
-                            child: Text(city),
-                          )),
+                          ..._cities.map(
+                            (city) => DropdownMenuItem(
+                              value: city,
+                              child: Text(city),
+                            ),
+                          ),
                         ],
                         onChanged: (value) {
                           setState(() {
@@ -351,8 +356,8 @@ class _CommunityListPageState extends State<CommunityListPage> {
           // Community List
           Expanded(
             child: _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : _error != null
+                ? const Center(child: CircularProgressIndicator())
+                : _error != null
                 ? Center(
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
@@ -375,28 +380,21 @@ class _CommunityListPageState extends State<CommunityListPage> {
                     ),
                   )
                 : _communities.isEmpty
-                  ? const Center(child: Text("No communities available."))
-                  : GridView.builder(
-                      padding: const EdgeInsets.all(16),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3, // 3 communities per row
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                        childAspectRatio: 0.75, // Adjust aspect ratio for card height
-                      ),
-                      itemCount: _communities.length,
-                      itemBuilder: (context, index) {
-                        final community = _communities[index];
-                        // For demo, assume not joined. In real app, check from backend
-                        final isJoined = false;
+                ? const Center(child: Text("No communities available."))
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: _communities.length,
+                    itemBuilder: (context, index) {
+                      final community = _communities[index];
+                      final isJoined = false;
 
-                        return CommunityCard(
-                          community: community,
-                          isJoined: isJoined,
-                          onJoinTap: () => _joinCommunity(community),
-                        );
-                      },
-                    ),
+                      return CommunityCard(
+                        community: community,
+                        isJoined: isJoined,
+                        onJoinTap: () => _joinCommunity(community),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
