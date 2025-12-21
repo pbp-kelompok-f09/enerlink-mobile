@@ -29,6 +29,15 @@ class _CommunityListPageState extends State<CommunityListPage> {
   @override
   void initState() {
     super.initState();
+    _checkLoginAndLoadCommunities();
+  }
+
+  Future<void> _checkLoginAndLoadCommunities() async {
+    final loggedIn = await ApiClient.isLoggedIn();
+    if (!loggedIn && mounted) {
+      Navigator.pushReplacementNamed(context, '/login');
+      return;
+    }
     _loadCommunities();
   }
 

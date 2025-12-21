@@ -36,7 +36,7 @@ class ApiClient {
     print('🗑️ Session cleared');
   }
 
-  static Future<Map<String, String>> getAuthHeaders() async {
+  static Future<Map<String, String>>getAuthHeaders() async {
     final token = await getToken();
     final headers = <String, String>{
       'Accept': 'application/json',
