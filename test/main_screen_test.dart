@@ -25,7 +25,7 @@ void main() {
     ApiClient.client = mockClient;
     
     when(mockClient.get(
-      Uri.parse('http://localhost:8000/api/dashboard/'),
+      Uri.parse('https://vazha-khayri-enerlink.pbp.cs.ui.ac.id/api/dashboard/'),
       headers: anyNamed('headers'),
     )).thenAnswer((_) async => http.Response(jsonEncode({
       'username': 'testuser',

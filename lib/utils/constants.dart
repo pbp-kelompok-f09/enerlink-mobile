@@ -3,13 +3,7 @@ import 'package:flutter/foundation.dart';
 
 class ApiConstants {
   static String get baseUrl {
-    if (kReleaseMode) {
-      return 'https://vazha-khayri-enerlink.pbp.cs.ui.ac.id';
-    } else if (defaultTargetPlatform == TargetPlatform.android) {
-      return 'http://10.0.2.2:8000';
-    } else {
-      return 'http://127.0.0.1:8000';
-    }
+    return 'https://vazha-khayri-enerlink.pbp.cs.ui.ac.id';
   }
   
   // Auth Endpoints

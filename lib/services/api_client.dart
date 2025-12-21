@@ -10,7 +10,7 @@ import 'package:enerlink_mobile/utils/constants.dart';
 class ApiClient {
   static http.Client client = http.Client();
 
-  // static String baseUrl = 'http://127.0.0.1:8000'; // Hardcode sementara
+  // static String baseUrl = 'https://vazha-khayri-enerlink.pbp.cs.ui.ac.id'; // Hardcode sementara
 
   static String get baseUrl {
     return ApiConstants.baseUrl;

@@ -48,7 +48,7 @@ void main() {
       // Assert
       expect(response.statusCode, 200);
       verify(mockClient.post(
-        Uri.parse('http://localhost:8000/api/auth/register/'),
+        Uri.parse('https://vazha-khayri-enerlink.pbp.cs.ui.ac.id/api/auth/register/'),
         headers: anyNamed('headers'),
         body: anyNamed('body'),
       )).called(1);

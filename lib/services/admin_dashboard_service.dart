@@ -170,7 +170,7 @@ class AdminDashboardService {
 
   // Ganti editUser lama dengan yang ini
   Future<bool> editUser(CookieRequest request, int id, Map<String, String> data, {List<int>? imageBytes, String? filename}) async {
-    // Sesuaikan URL dengan punyamu (misal: http://127.0.0.1:8000/admin-dashboard/api/users/edit/$id/)
+    // Sesuaikan URL dengan punyamu (misal: https://vazha-khayri-enerlink.pbp.cs.ui.ac.id/admin-dashboard/api/users/edit/$id/)
     final String url = '${ApiClient.baseUrl}/admin-dashboard/api/users/edit/$id/';
     return _sendMultipartRequest(request, url, data, imageBytes, filename);
   }

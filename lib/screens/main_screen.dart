@@ -65,9 +65,7 @@ class MainScreenMobileState extends State<MainScreenMobile> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     // Build pages list dynamically
@@ -281,13 +279,9 @@ class _HomeContentState extends State<HomeContent> {
                 const SizedBox(height: 30),
 
                 // Welcome Text
-                Text(
-                  'Welcome $displayName,',
-                  style: const TextStyle(color: Colors.white70, fontSize: 18),
-                ),
                 const SizedBox(height: 8),
                 const Text(
-                  'Connect,\nPlay, Energize!',
+                  'Connect,\nPlay, Enerlink!',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 32,
@@ -368,7 +362,8 @@ class _HomeContentState extends State<HomeContent> {
                 ],
 
                 // Featured Communities Carousel
-                if (!_isLoadingCommunities && _featuredCommunities.isNotEmpty) ...[
+                if (!_isLoadingCommunities &&
+                    _featuredCommunities.isNotEmpty) ...[
                   Text(
                     'Join a Community',
                     style: TextStyle(
@@ -471,8 +466,6 @@ class _HomeContentState extends State<HomeContent> {
                 const SizedBox(height: 30),
 
                 // Bottom Banner
-                _buildBottomBanner(),
-
                 const SizedBox(height: 30),
               ],
             ),
@@ -655,10 +648,7 @@ class _HomeContentState extends State<HomeContent> {
                 const SizedBox(height: 4),
                 Text(
                   community.fields.description,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.black54,
-                  ),
+                  style: const TextStyle(fontSize: 12, color: Colors.black54),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
