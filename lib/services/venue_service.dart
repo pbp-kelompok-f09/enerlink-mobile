@@ -6,7 +6,8 @@ import '../models/booking.dart';
 import 'api_client.dart'; // Import ApiClient for headers
 
 class VenueService {
-  static String get baseUrl => "${dotenv.env['BACKEND_URL']}/rent-venue/api";
+  static String get baseUrl =>
+      "https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/rent-venue/api";
 
   // Get all venues
   static Future<VenueResponse> getVenues({
@@ -17,7 +18,7 @@ class VenueService {
     try {
       String url = "$baseUrl/venues/";
       List<String> queryParams = [];
-      
+
       if (search != null && search.isNotEmpty) {
         queryParams.add("search=$search");
       }
@@ -27,7 +28,7 @@ class VenueService {
       if (maxPrice != null && maxPrice.isNotEmpty) {
         queryParams.add("max_price=$maxPrice");
       }
-      
+
       if (queryParams.isNotEmpty) {
         url += "?${queryParams.join('&')}";
       }
@@ -121,16 +122,16 @@ class VenueService {
 
   // Create booking
   static Future<Map<String, dynamic>> createBooking({
-  required String venueId,
-  required String bookingDate,
-  required String startTime,
-  required String endTime,
+    required String venueId,
+    required String bookingDate,
+    required String startTime,
+    required String endTime,
   }) async {
     try {
       String url = "$baseUrl/book/$venueId/";
 
       print('🔍 Venue ID: $venueId');
-      print('🔍 Full URL: $url');  // Debug: lihat URL lengkap
+      print('🔍 Full URL: $url'); // Debug: lihat URL lengkap
 
       final headers = await ApiClient.getAuthHeaders();
 
@@ -158,14 +159,14 @@ class VenueService {
         if (response.body.isEmpty) {
           return {'status': 'success', 'message': 'Booking created'};
         }
-        
+
         final decoded = json.decode(response.body);
-        
+
         // 🔧 TAMBAHKAN: Cek apakah decoded null
         if (decoded == null) {
           return {'status': 'success', 'message': 'Booking created'};
         }
-        
+
         return decoded as Map<String, dynamic>;
       } else if (response.statusCode == 401) {
         throw Exception('Please login first to book a venue.');
@@ -175,13 +176,17 @@ class VenueService {
           try {
             final errorData = json.decode(response.body);
             if (errorData != null && errorData is Map) {
-              throw Exception(errorData['message'] ?? 'Failed to create booking');
+              throw Exception(
+                errorData['message'] ?? 'Failed to create booking',
+              );
             }
           } catch (_) {
             // JSON parse failed
           }
         }
-        throw Exception('Failed to create booking. Status: ${response.statusCode}');
+        throw Exception(
+          'Failed to create booking. Status: ${response.statusCode}',
+        );
       }
     } catch (e) {
       print('❌ Create booking error: $e');
@@ -218,7 +223,8 @@ class VenueService {
         return BookingResponse.fromJson(jsonData);
       } else {
         throw Exception(
-          jsonData['message'] ?? 'Failed to update booking. Status code: ${response.statusCode}',
+          jsonData['message'] ??
+              'Failed to update booking. Status code: ${response.statusCode}',
         );
       }
     } catch (e) {
@@ -242,7 +248,8 @@ class VenueService {
       } else {
         final jsonData = json.decode(response.body);
         throw Exception(
-          jsonData['message'] ?? 'Failed to cancel booking. Status code: ${response.statusCode}',
+          jsonData['message'] ??
+              'Failed to cancel booking. Status code: ${response.statusCode}',
         );
       }
     } catch (e) {
@@ -250,4 +257,3 @@ class VenueService {
     }
   }
 }
-

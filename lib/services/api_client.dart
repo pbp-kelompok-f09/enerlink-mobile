@@ -39,7 +39,7 @@ class ApiClient {
     print('🗑️ Session cleared');
   }
 
-  static Future<Map<String, String>>getAuthHeaders() async {
+  static Future<Map<String, String>> getAuthHeaders() async {
     final token = await getToken();
     final headers = <String, String>{
       'Accept': 'application/json',
@@ -55,14 +55,21 @@ class ApiClient {
   // === Auth ===
   static Future<http.Response> login(String username, String password) async {
     try {
-      final uri = Uri.parse('$baseUrl/api/auth/login/');
+      final uri = Uri.parse(
+        'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/api/auth/login/',
+      );
       print('🔄 Login request to: $uri');
-      
-      final resp = await client.post(
-        uri,
-        headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
-        body: jsonEncode({'username': username, 'password': password}),
-      ).timeout(timeout);
+
+      final resp = await client
+          .post(
+            uri,
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: jsonEncode({'username': username, 'password': password}),
+          )
+          .timeout(timeout);
 
       print('✅ Login response: ${resp.statusCode}');
 
@@ -88,21 +95,28 @@ class ApiClient {
     String lastName = '',
   }) async {
     try {
-      final uri = Uri.parse('$baseUrl/api/auth/register/');
+      final uri = Uri.parse(
+        'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/api/auth/register/',
+      );
       print('🔄 Register request to: $uri');
 
-      final resp = await client.post(
-        uri,
-        headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
-        body: jsonEncode({
-          'username': username,
-          'email': email,
-          'password': password,
-          'confirm_password': confirmPassword,
-          'first_name': firstName,
-          'last_name': lastName,
-        }),
-      ).timeout(timeout);
+      final resp = await client
+          .post(
+            uri,
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: jsonEncode({
+              'username': username,
+              'email': email,
+              'password': password,
+              'confirm_password': confirmPassword,
+              'first_name': firstName,
+              'last_name': lastName,
+            }),
+          )
+          .timeout(timeout);
 
       print('✅ Register response: ${resp.statusCode}');
 
@@ -122,7 +136,7 @@ class ApiClient {
   static Future<void> logout() async {
     try {
       final headers = await getAuthHeaders();
-      final uri = Uri.parse('$baseUrl/api/auth/logout/');
+      final uri = Uri.parse('localhost:8000/api/auth/logout/');
       await client.post(uri, headers: headers).timeout(timeout);
     } catch (_) {}
     await clearSession();
@@ -135,7 +149,9 @@ class ApiClient {
         await Future.delayed(const Duration(milliseconds: 500));
       }
       final headers = await getAuthHeaders();
-      final uri = Uri.parse('$baseUrl/api/dashboard/');
+      final uri = Uri.parse(
+        'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/api/dashboard/',
+      );
       print('🔄 Dashboard request to: $uri');
 
       final resp = await client.get(uri, headers: headers).timeout(timeout);
@@ -175,8 +191,10 @@ class ApiClient {
         print('❌ No token!');
         return false;
       }
-      
-      final uri = Uri.parse('$baseUrl/api/profile/update/');
+
+      final uri = Uri.parse(
+        'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/api/profile/update/',
+      );
 
       print('');
       print('╔════════════════════════════════════╗');
@@ -188,7 +206,7 @@ class ApiClient {
 
       final req = http.MultipartRequest('POST', uri);
       req.headers['Authorization'] = 'Bearer $token';
-      
+
       // Fields
       req.fields['name'] = name;
       req.fields['email'] = email;
@@ -200,29 +218,34 @@ class ApiClient {
         print('📷 ═══════════════════════════════════');
         print('📷 ADDING IMAGE TO MULTIPART REQUEST');
         print('📷 ═══════════════════════════════════');
-        
-        String filename = imageFile?.name ?? 'profile_${DateTime.now().millisecondsSinceEpoch}.jpg';
-        
+
+        String filename =
+            imageFile?.name ??
+            'profile_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
         // Determine mime type
         String mimeType = 'image/jpeg';
         final ext = filename.toLowerCase().split('.').last;
-        if (ext == 'png') mimeType = 'image/png';
-        else if (ext == 'gif') mimeType = 'image/gif';
-        else if (ext == 'webp') mimeType = 'image/webp';
-        
+        if (ext == 'png')
+          mimeType = 'image/png';
+        else if (ext == 'gif')
+          mimeType = 'image/gif';
+        else if (ext == 'webp')
+          mimeType = 'image/webp';
+
         print('📷 Filename: $filename');
         print('📷 MimeType: $mimeType');
         print('📷 Size: ${imageBytes.length} bytes');
-        
+
         final multipartFile = http.MultipartFile.fromBytes(
           'profile_picture',
           imageBytes,
           filename: filename,
           contentType: MediaType.parse(mimeType),
         );
-        
+
         req.files.add(multipartFile);
-        
+
         print('📷 ✅ File added successfully!');
         print('📷 Request files count: ${req.files.length}');
         print('📷 File field name: ${req.files.first.field}');
@@ -235,11 +258,11 @@ class ApiClient {
       print('🚀 Sending request...');
       final streamed = await client.send(req).timeout(timeout);
       final response = await http.Response.fromStream(streamed);
-      
+
       print('✅ Status: ${response.statusCode}');
       print('✅ Body: ${response.body}');
       print('═══════════════════════════════════════');
-      
+
       return response.statusCode == 200;
     } catch (e) {
       print('❌ Error: $e');
@@ -251,14 +274,14 @@ class ApiClient {
   static Future<bool> topUpWallet(double amount) async {
     try {
       final headers = await getAuthHeaders();
-      final uri = Uri.parse('$baseUrl/api/wallet/topup/');
+      final uri = Uri.parse(
+        'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/api/wallet/topup/',
+      );
       print('🔄 Top up wallet: $amount');
 
-      final resp = await client.post(
-        uri,
-        headers: headers,
-        body: jsonEncode({'amount': amount}),
-      ).timeout(timeout);
+      final resp = await client
+          .post(uri, headers: headers, body: jsonEncode({'amount': amount}))
+          .timeout(timeout);
 
       print('✅ Top up response: ${resp.statusCode}');
       return resp.statusCode == 200;
@@ -272,7 +295,9 @@ class ApiClient {
   static Future<bool> cancelEvent(String eventId) async {
     try {
       final headers = await getAuthHeaders();
-      final uri = Uri.parse('$baseUrl/api/event/$eventId/leave/');
+      final uri = Uri.parse(
+        'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/api/event/$eventId/leave/',
+      );
       final resp = await client.post(uri, headers: headers).timeout(timeout);
       return resp.statusCode == 200;
     } catch (e) {
@@ -285,7 +310,9 @@ class ApiClient {
   static Future<bool> leaveCommunity(String communityId) async {
     try {
       final headers = await getAuthHeaders();
-      final uri = Uri.parse('$baseUrl/api/community/$communityId/leave/');
+      final uri = Uri.parse(
+        'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/api/community/$communityId/leave/',
+      );
       final resp = await client.post(uri, headers: headers).timeout(timeout);
       return resp.statusCode == 200;
     } catch (e) {
@@ -293,7 +320,7 @@ class ApiClient {
       return false;
     }
   }
-  
+
   // === Check if logged in ===
   static Future<bool> isLoggedIn() async {
     final token = await getToken();

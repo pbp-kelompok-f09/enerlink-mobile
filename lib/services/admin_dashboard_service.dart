@@ -1,7 +1,7 @@
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 // Import kedua model yang kita punya
 import '../models/admin_dashboard_model.dart';
-import '../models/admin_user_model.dart'; 
+import '../models/admin_user_model.dart';
 import '../models/admin_venue_model.dart';
 import '../models/admin_community_model.dart';
 import 'dart:convert';
@@ -9,11 +9,11 @@ import 'package:http/http.dart' as http;
 import 'api_client.dart'; // Import ApiClient
 
 class AdminDashboardService {
-  
   // 1. Fungsi Ambil Statistik (Untuk Dashboard Utama)
   Future<AdminDashboardStats> fetchStats(CookieRequest request) async {
-    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/stats/';
-    
+    final String url =
+        'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/admin-dashboard/api/stats/';
+
     final response = await request.get(url);
 
     return AdminDashboardStats.fromJson(response);
@@ -22,7 +22,7 @@ class AdminDashboardService {
   // 2. Fungsi Ambil Daftar User (Ini yang tadi ERROR karena belum ada)
   Future<List<AdminUser>> fetchUsers(CookieRequest request) async {
     final String url = '${ApiClient.baseUrl}/admin-dashboard/api/users/';
-    
+
     final response = await request.get(url);
 
     // Konversi JSON List menjadi List<AdminUser>
@@ -37,12 +37,13 @@ class AdminDashboardService {
 
   // Fungsi Hapus User
   Future<bool> deleteUser(CookieRequest request, int userId) async {
-    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/users/delete/$userId/';
-    
+    final String url =
+        'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/admin-dashboard/api/users/delete/$userId/';
+
     try {
       final response = await request.post(url, {});
       // Cek status code atau response. Biasanya kalau redirect (302) dianggap sukses di PBP
-      return true; 
+      return true;
     } catch (e) {
       return false;
     }
@@ -60,7 +61,8 @@ class AdminDashboardService {
   }
 
   Future<bool> deleteVenue(CookieRequest request, String venueId) async {
-    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/venues/delete/$venueId/';
+    final String url =
+        '${ApiClient.baseUrl}/admin-dashboard/api/venues/delete/$venueId/';
     try {
       final response = await request.post(url, {});
       return response['status'] == 'success';
@@ -80,8 +82,12 @@ class AdminDashboardService {
     return list;
   }
 
-  Future<bool> deleteCommunity(CookieRequest request, String communityId) async {
-    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/communities/delete/$communityId/';
+  Future<bool> deleteCommunity(
+    CookieRequest request,
+    String communityId,
+  ) async {
+    final String url =
+        '${ApiClient.baseUrl}/admin-dashboard/api/communities/delete/$communityId/';
     try {
       final response = await request.post(url, {});
       return response['status'] == 'success';
@@ -94,20 +100,38 @@ class AdminDashboardService {
 
   // --- VENUE WITH IMAGE ---
 
-  Future<bool> addVenueWithImage(CookieRequest request, Map<String, String> data, {List<int>? imageBytes, String? filename}) async {
+  Future<bool> addVenueWithImage(
+    CookieRequest request,
+    Map<String, String> data, {
+    List<int>? imageBytes,
+    String? filename,
+  }) async {
     final String url = '${ApiClient.baseUrl}/admin-dashboard/api/venues/add/';
     return _sendMultipartRequest(request, url, data, imageBytes, filename);
   }
 
   // Tambahkan/Ganti editVenue
-  Future<bool> editVenue(CookieRequest request, String venueId, Map<String, String> data, {List<int>? imageBytes, String? filename}) async {
-    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/venues/edit/$venueId/';
+  Future<bool> editVenue(
+    CookieRequest request,
+    String venueId,
+    Map<String, String> data, {
+    List<int>? imageBytes,
+    String? filename,
+  }) async {
+    final String url =
+        '${ApiClient.baseUrl}/admin-dashboard/api/venues/edit/$venueId/';
     return _sendMultipartRequest(request, url, data, imageBytes, filename);
   }
 
   // --- HELPER KHUSUS UPLOAD GAMBAR ---
   // Taruh ini di bagian paling bawah class, sebelum kurung tutup '}'
-  Future<bool> _sendMultipartRequest(CookieRequest request, String url, Map<String, String> fields, List<int>? fileBytes, String? filename) async {
+  Future<bool> _sendMultipartRequest(
+    CookieRequest request,
+    String url,
+    Map<String, String> fields,
+    List<int>? fileBytes,
+    String? filename,
+  ) async {
     try {
       var uri = Uri.parse(url);
       var multipartRequest = http.MultipartRequest('POST', uri);
@@ -147,8 +171,12 @@ class AdminDashboardService {
   }
 
   // 1. Add Community (Kembali ke POST biasa)
-  Future<bool> addCommunity(CookieRequest request, Map<String, dynamic> data) async {
-    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/communities/add/';
+  Future<bool> addCommunity(
+    CookieRequest request,
+    Map<String, dynamic> data,
+  ) async {
+    final String url =
+        '${ApiClient.baseUrl}/admin-dashboard/api/communities/add/';
     try {
       final response = await request.post(url, data);
       return response['status'] == 'success';
@@ -158,8 +186,13 @@ class AdminDashboardService {
   }
 
   // 2. Edit Community (Kembali ke POST biasa)
-  Future<bool> editCommunity(CookieRequest request, String id, Map<String, dynamic> data) async {
-    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/communities/edit/$id/';
+  Future<bool> editCommunity(
+    CookieRequest request,
+    String id,
+    Map<String, dynamic> data,
+  ) async {
+    final String url =
+        '${ApiClient.baseUrl}/admin-dashboard/api/communities/edit/$id/';
     try {
       final response = await request.post(url, data);
       return response['status'] == 'success';
@@ -169,35 +202,59 @@ class AdminDashboardService {
   }
 
   // Ganti editUser lama dengan yang ini
-  Future<bool> editUser(CookieRequest request, int id, Map<String, String> data, {List<int>? imageBytes, String? filename}) async {
+  Future<bool> editUser(
+    CookieRequest request,
+    int id,
+    Map<String, String> data, {
+    List<int>? imageBytes,
+    String? filename,
+  }) async {
     // Sesuaikan URL dengan punyamu (misal: https://vazha-khayri-enerlink.pbp.cs.ui.ac.id/admin-dashboard/api/users/edit/$id/)
-    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/users/edit/$id/';
+    final String url =
+        '${ApiClient.baseUrl}/admin-dashboard/api/users/edit/$id/';
     return _sendMultipartRequest(request, url, data, imageBytes, filename);
   }
 
   // --- ADD ACTIONS ---
 
   // Update fungsi addUser jadi support gambar
-  Future<bool> addUser(CookieRequest request, Map<String, String> data, {List<int>? imageBytes, String? filename}) async {
+  Future<bool> addUser(
+    CookieRequest request,
+    Map<String, String> data, {
+    List<int>? imageBytes,
+    String? filename,
+  }) async {
     final String url = '${ApiClient.baseUrl}/admin-dashboard/api/users/add/';
     // Gunakan helper _sendMultipartRequest yang sudah kita buat sebelumnya
     return _sendMultipartRequest(request, url, data, imageBytes, filename);
   }
 
   // Ganti addVenue lama dengan yang ini
-  Future<bool> addVenue(CookieRequest request, Map<String, String> data, {List<int>? imageBytes, String? filename}) async {
+  Future<bool> addVenue(
+    CookieRequest request,
+    Map<String, String> data, {
+    List<int>? imageBytes,
+    String? filename,
+  }) async {
     final String url = '${ApiClient.baseUrl}/admin-dashboard/api/venues/add/';
     return _sendMultipartRequest(request, url, data, imageBytes, filename);
   }
 
-  Future<bool> updateUserWithImage(CookieRequest request, int userId, Map<String, String> data, {List<int>? imageBytes, String? filename}) async {
+  Future<bool> updateUserWithImage(
+    CookieRequest request,
+    int userId,
+    Map<String, String> data, {
+    List<int>? imageBytes,
+    String? filename,
+  }) async {
     // URL Endpoint
-    final String url = '${ApiClient.baseUrl}/admin-dashboard/api/users/update/$userId/';
-    
+    final String url =
+        '${ApiClient.baseUrl}/admin-dashboard/api/users/update/$userId/';
+
     // Karena pbp_django_auth mungkin belum support full multipart dengan mudah,
     // Kita bisa gunakan pendekatan hybrid atau request manual jika perlu.
     // TAPI, CookieRequest biasanya punya method buat ini atau kita pakai http biasa dengan header cookie.
-    
+
     // Cara Paling Aman (Manual Multipart Request):
     var uri = Uri.parse(url);
     var multipartRequest = http.MultipartRequest('POST', uri);
@@ -215,15 +272,15 @@ class AdminDashboardService {
         ),
       );
     }
-    
+
     // 3. Masukkan Headers & Cookies (PENTING BIAR GAK 403)
     // Ambil headers dari CookieRequest yang sedang login
-    multipartRequest.headers.addAll(request.headers); 
+    multipartRequest.headers.addAll(request.headers);
 
     try {
       final streamedResponse = await multipartRequest.send();
       final response = await http.Response.fromStream(streamedResponse);
-      
+
       if (response.statusCode == 200) {
         return true;
       } else {

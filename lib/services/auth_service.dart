@@ -13,33 +13,26 @@ class AuthService {
     try {
       final response = await ApiService.post(
         endpoint: ApiConstants.loginEndpoint,
-        body: {
-          'username': username,
-          'password': password,
-        },
+        body: {'username': username, 'password': password},
       );
 
       if (response.statusCode == 200 || response.statusCode == 302) {
         // Extract session cookie from response headers
         final cookies = response.headers['set-cookie'];
-        
+
         // Parse response body
         final Map<String, dynamic> responseData = jsonDecode(response.body);
-        
+
         // Create User object
         final user = User.fromJson(responseData['user']);
-        
+
         // Save login data
         await SharedPreferencesHelper.saveLoginData(
           user: user,
           sessionCookie: cookies ?? '',
         );
 
-        return {
-          'success': true,
-          'message': 'Login successful',
-          'user': user,
-        };
+        return {'success': true, 'message': 'Login successful', 'user': user};
       } else {
         final errorData = jsonDecode(response.body);
         return {
@@ -48,10 +41,7 @@ class AuthService {
         };
       }
     } catch (e) {
-      return {
-        'success': false,
-        'message': 'Connection error: ${e.toString()}',
-      };
+      return {'success': false, 'message': 'Connection error: ${e.toString()}'};
     }
   }
 
@@ -92,10 +82,7 @@ class AuthService {
         };
       }
     } catch (e) {
-      return {
-        'success': false,
-        'message': 'Connection error: ${e.toString()}',
-      };
+      return {'success': false, 'message': 'Connection error: ${e.toString()}'};
     }
   }
 
@@ -111,18 +98,12 @@ class AuthService {
       // Clear local data regardless of server response
       await SharedPreferencesHelper.clearLoginData();
 
-      return {
-        'success': true,
-        'message': 'Logout successful',
-      };
+      return {'success': true, 'message': 'Logout successful'};
     } catch (e) {
       // Clear local data even if server request fails
       await SharedPreferencesHelper.clearLoginData();
-      
-      return {
-        'success': true,
-        'message': 'Logged out locally',
-      };
+
+      return {'success': true, 'message': 'Logged out locally'};
     }
   }
 

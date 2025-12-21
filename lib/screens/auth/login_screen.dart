@@ -34,7 +34,7 @@ class _LoginScreenMobileState extends State<LoginScreenMobile> {
 
       // Use CookieRequest to login
       final response = await request.login(
-        '${dotenv.env["BACKEND_URL"]}/api/auth/login/',
+        'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/api/auth/login/',
         {'username': _username.text, 'password': _password.text},
       );
 

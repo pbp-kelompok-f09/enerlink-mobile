@@ -46,14 +46,16 @@ class _RegisterScreenMobileState extends State<RegisterScreenMobile> {
 
     try {
       final request = context.read<CookieRequest>();
-      
+
       // Split name into first and last name
       final nameParts = _name.text.trim().split(' ');
       final firstName = nameParts.first;
-      final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
-      
+      final lastName = nameParts.length > 1
+          ? nameParts.sublist(1).join(' ')
+          : '';
+
       final response = await request.post(
-        '${dotenv.env["BACKEND_URL"]}/api/auth/register/',
+        'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/api/auth/register/',
         {
           'username': _username.text,
           'email': _email.text,
@@ -147,11 +149,16 @@ class _RegisterScreenMobileState extends State<RegisterScreenMobile> {
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 400),
                 child: Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                  ),
                   elevation: 12,
                   shadowColor: Colors.black26,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 32),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 28,
+                      vertical: 32,
+                    ),
                     child: Form(
                       key: _formKey,
                       child: Column(
@@ -164,7 +171,7 @@ class _RegisterScreenMobileState extends State<RegisterScreenMobile> {
                             fit: BoxFit.contain,
                           ),
                           const SizedBox(height: 20),
-                          
+
                           // Title
                           const Text(
                             'Create Account',
@@ -183,7 +190,7 @@ class _RegisterScreenMobileState extends State<RegisterScreenMobile> {
                             ),
                           ),
                           const SizedBox(height: 28),
-                          
+
                           // Full Name Field
                           TextFormField(
                             controller: _name,
@@ -193,10 +200,12 @@ class _RegisterScreenMobileState extends State<RegisterScreenMobile> {
                               icon: Icons.badge_outlined,
                             ),
                             textCapitalization: TextCapitalization.words,
-                            validator: (v) => v == null || v.isEmpty ? 'Name is required' : null,
+                            validator: (v) => v == null || v.isEmpty
+                                ? 'Name is required'
+                                : null,
                           ),
                           const SizedBox(height: 14),
-                          
+
                           // Username Field
                           TextFormField(
                             controller: _username,
@@ -206,14 +215,15 @@ class _RegisterScreenMobileState extends State<RegisterScreenMobile> {
                               icon: Icons.person_outline,
                             ),
                             validator: (v) {
-                              if (v == null || v.isEmpty) return 'Username is required';
+                              if (v == null || v.isEmpty)
+                                return 'Username is required';
                               if (v.length < 3) return 'Min 3 characters';
                               if (v.contains(' ')) return 'No spaces allowed';
                               return null;
                             },
                           ),
                           const SizedBox(height: 14),
-                          
+
                           // Email Field
                           TextFormField(
                             controller: _email,
@@ -224,13 +234,15 @@ class _RegisterScreenMobileState extends State<RegisterScreenMobile> {
                             ),
                             keyboardType: TextInputType.emailAddress,
                             validator: (v) {
-                              if (v == null || v.isEmpty) return 'Email is required';
-                              if (!v.contains('@') || !v.contains('.')) return 'Invalid email format';
+                              if (v == null || v.isEmpty)
+                                return 'Email is required';
+                              if (!v.contains('@') || !v.contains('.'))
+                                return 'Invalid email format';
                               return null;
                             },
                           ),
                           const SizedBox(height: 14),
-                          
+
                           // Password Field
                           TextFormField(
                             controller: _password,
@@ -241,20 +253,25 @@ class _RegisterScreenMobileState extends State<RegisterScreenMobile> {
                               icon: Icons.lock_outline,
                               suffix: IconButton(
                                 icon: Icon(
-                                  _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                                  _obscurePassword
+                                      ? Icons.visibility_off_outlined
+                                      : Icons.visibility_outlined,
                                   color: Colors.grey[600],
                                 ),
-                                onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                                onPressed: () => setState(
+                                  () => _obscurePassword = !_obscurePassword,
+                                ),
                               ),
                             ),
                             validator: (v) {
-                              if (v == null || v.isEmpty) return 'Password is required';
+                              if (v == null || v.isEmpty)
+                                return 'Password is required';
                               if (v.length < 6) return 'Min 6 characters';
                               return null;
                             },
                           ),
                           const SizedBox(height: 14),
-                          
+
                           // Confirm Password Field
                           TextFormField(
                             controller: _confirm,
@@ -265,20 +282,26 @@ class _RegisterScreenMobileState extends State<RegisterScreenMobile> {
                               icon: Icons.lock_outline,
                               suffix: IconButton(
                                 icon: Icon(
-                                  _obscureConfirm ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                                  _obscureConfirm
+                                      ? Icons.visibility_off_outlined
+                                      : Icons.visibility_outlined,
                                   color: Colors.grey[600],
                                 ),
-                                onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                                onPressed: () => setState(
+                                  () => _obscureConfirm = !_obscureConfirm,
+                                ),
                               ),
                             ),
                             validator: (v) {
-                              if (v == null || v.isEmpty) return 'Please confirm password';
-                              if (v != _password.text) return 'Passwords do not match';
+                              if (v == null || v.isEmpty)
+                                return 'Please confirm password';
+                              if (v != _password.text)
+                                return 'Passwords do not match';
                               return null;
                             },
                           ),
                           const SizedBox(height: 24),
-                          
+
                           // Register Button
                           SizedBox(
                             width: double.infinity,
@@ -289,7 +312,9 @@ class _RegisterScreenMobileState extends State<RegisterScreenMobile> {
                                 backgroundColor: const Color(0xFF2563EB),
                                 foregroundColor: Colors.white,
                                 elevation: 2,
-                                shadowColor: const Color(0xFF2563EB).withValues(alpha: 0.4),
+                                shadowColor: const Color(
+                                  0xFF2563EB,
+                                ).withValues(alpha: 0.4),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -314,33 +339,42 @@ class _RegisterScreenMobileState extends State<RegisterScreenMobile> {
                             ),
                           ),
                           const SizedBox(height: 20),
-                          
+
                           // Divider
                           Row(
                             children: [
                               Expanded(child: Divider(color: Colors.grey[300])),
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
                                 child: Text(
                                   'or',
-                                  style: TextStyle(color: Colors.grey[500], fontSize: 14),
+                                  style: TextStyle(
+                                    color: Colors.grey[500],
+                                    fontSize: 14,
+                                  ),
                                 ),
                               ),
                               Expanded(child: Divider(color: Colors.grey[300])),
                             ],
                           ),
                           const SizedBox(height: 20),
-                          
+
                           // Login Link
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
                                 'Already have an account? ',
-                                style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 14,
+                                ),
                               ),
                               GestureDetector(
-                                onTap: () => Navigator.pushNamed(context, '/login'),
+                                onTap: () =>
+                                    Navigator.pushNamed(context, '/login'),
                                 child: const Text(
                                   'Sign In',
                                   style: TextStyle(
@@ -353,10 +387,11 @@ class _RegisterScreenMobileState extends State<RegisterScreenMobile> {
                             ],
                           ),
                           const SizedBox(height: 12),
-                          
+
                           // Back to Home
                           TextButton.icon(
-                            onPressed: () => Navigator.pushReplacementNamed(context, '/'),
+                            onPressed: () =>
+                                Navigator.pushReplacementNamed(context, '/'),
                             icon: const Icon(Icons.arrow_back, size: 18),
                             label: const Text('Back to Home'),
                             style: TextButton.styleFrom(

@@ -4,14 +4,15 @@ import 'api_client.dart';
 import '../models/community.dart';
 
 class CommunityService {
-  static String get baseUrl => "${ApiClient.baseUrl}/community";
+  static String get baseUrl =>
+      "https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/community";
 
   // Get all communities (JSON)
   static Future<List<Community>> getCommunities() async {
     try {
       final headers = await ApiClient.getAuthHeaders();
       final url = "$baseUrl/json/";
-      
+
       final response = await http.get(Uri.parse(url), headers: headers);
 
       if (response.statusCode == 200) {
@@ -31,8 +32,8 @@ class CommunityService {
   static Future<bool> joinCommunity(String communityId) async {
     try {
       final headers = await ApiClient.getAuthHeaders();
-      final url = "$baseUrl/$communityId/join-flutter/";
-      
+      final url = "$baseUrl$communityId/join-flutter/";
+
       final response = await http.post(Uri.parse(url), headers: headers);
 
       if (response.statusCode == 200) {

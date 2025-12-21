@@ -4,10 +4,10 @@ import '../utils/constants.dart';
 import '../utils/shared_preferences_helper.dart';
 
 class ApiService {
-  static Future<Map<String, String>> _getHeaders({bool includeAuth = false}) async {
-    Map<String, String> headers = {
-      'Content-Type': 'application/json',
-    };
+  static Future<Map<String, String>> _getHeaders({
+    bool includeAuth = false,
+  }) async {
+    Map<String, String> headers = {'Content-Type': 'application/json'};
 
     if (includeAuth) {
       final sessionCookie = await SharedPreferencesHelper.getSessionCookie();
@@ -24,15 +24,15 @@ class ApiService {
     required Map<String, dynamic> body,
     bool includeAuth = false,
   }) async {
-    final url = Uri.parse('${ApiConstants.baseUrl}$endpoint');
+    final url = Uri.parse(
+      'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id$endpoint',
+    );
     final headers = await _getHeaders(includeAuth: includeAuth);
 
     try {
-      final response = await http.post(
-        url,
-        headers: headers,
-        body: jsonEncode(body),
-      ).timeout(ApiConstants.connectionTimeout);
+      final response = await http
+          .post(url, headers: headers, body: jsonEncode(body))
+          .timeout(ApiConstants.connectionTimeout);
 
       return response;
     } catch (e) {
@@ -44,14 +44,15 @@ class ApiService {
     required String endpoint,
     bool includeAuth = true,
   }) async {
-    final url = Uri.parse('${ApiConstants.baseUrl}$endpoint');
+    final url = Uri.parse(
+      'https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id$endpoint',
+    );
     final headers = await _getHeaders(includeAuth: includeAuth);
 
     try {
-      final response = await http.get(
-        url,
-        headers: headers,
-      ).timeout(ApiConstants.connectionTimeout);
+      final response = await http
+          .get(url, headers: headers)
+          .timeout(ApiConstants.connectionTimeout);
 
       return response;
     } catch (e) {

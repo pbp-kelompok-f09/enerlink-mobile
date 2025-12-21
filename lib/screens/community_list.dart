@@ -51,7 +51,8 @@ class _CommunityListPageState extends State<CommunityListPage> {
 
     try {
       final headers = await ApiClient.getAuthHeaders();
-      final url = "${ApiClient.baseUrl}/community/json/";
+      final url =
+          "https://vazha-khayri-enerlink-tk.pbp.cs.ui.ac.id/community/json/";
 
       final response = await http.get(Uri.parse(url), headers: headers);
 
