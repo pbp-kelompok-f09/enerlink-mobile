@@ -195,6 +195,9 @@ Django Framework
 Database Postgres
 ```
 
+## Video Demonstrasi Produk
+https://youtu.be/v_xhNjzg5e4?si=naYKCCQA6CM0Um_7
+
 ## Link 
 - Alur Sheets: https://docs.google.com/spreadsheets/d/1zH-FyHCWx9a6bBGQ5zgjocIm-GUWxTVqYs0H9DE2wIo/edit?gid=0#gid=0
 - PWS: https://vazha-khayri-enerlink.pbp.cs.ui.ac.id/
