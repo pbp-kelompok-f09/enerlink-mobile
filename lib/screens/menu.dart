@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:enerlink_mobile/widgets/bottom_navbar.dart';
-import 'package:enerlink_mobile/screens/community_list.dart'; // New import for CommunityListPage
+import 'package:enerlink_mobile/screens/community_list.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -19,21 +19,24 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _pages = [
-      const HomeContent(), // Index 0: Home (The Dashboard)
-      const CommunityListPage(), // Index 1: Real Community List
+      const HomeContent(), // Index 0
+      const CommunityListPage(), // Index 1
       const PlaceholderPage(
         title: 'Venues',
         icon: Icons.stadium_rounded,
       ), // Index 2
       const PlaceholderPage(
         title: "Event",
-        icon: Icons.stadium_rounded,
-      ), // Index 3: Assuming EventListPage should be here
+        icon: Icons.emoji_events_rounded,
+      ), // Index 3
       const PlaceholderPage(
         title: 'Forum',
         icon: Icons.forum_rounded,
       ), // Index 4
-      const PlaceholderPage(title: 'User Dashboard', icon: Icons.person),
+      const PlaceholderPage(
+        title: 'User Dashboard', 
+        icon: Icons.person
+      ), // Index 5
     ];
   }
 
@@ -46,12 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // No AppBar or Drawer anymore as requested for a cleaner, modern look
-      // extendBodyBehindAppBar: _selectedIndex == 0, // No AppBar, so no need to extend body
-
-      // This is the "Body" that changes based on bottom nav selection
       body: _pages[_selectedIndex],
-
       bottomNavigationBar: BottomNavbar(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
@@ -62,7 +60,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
 // --- WIDGETS FOR PAGES ---
 
-// 1. The Main Home Dashboard (Refactored from previous code)
 class HomeContent extends StatelessWidget {
   const HomeContent({super.key});
 
@@ -84,30 +81,17 @@ class HomeContent extends StatelessWidget {
             ),
           ),
         ),
-        // Decorative Circles
+        
+        // Decorative Circles (Refactored for cleaner code)
         Positioned(
           top: -100,
           right: -100,
-          child: Container(
-            width: 300,
-            height: 300,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withAlpha((255 * 0.1).round()),
-            ),
-          ),
+          child: _buildDecorativeCircle(300, 0.1),
         ),
         Positioned(
           bottom: 50,
           left: -50,
-          child: Container(
-            width: 200,
-            height: 200,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withAlpha((255 * 0.05).round()),
-            ),
-          ),
+          child: _buildDecorativeCircle(200, 0.05),
         ),
 
         // 2. Main Content
@@ -117,9 +101,8 @@ class HomeContent extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // SizedBox to push content down a bit, compensating for removed AppBar
                 const SizedBox(height: 30),
-                // Welcome Text
+                // Header
                 const Text(
                   'Welcome [User Name],',
                   style: TextStyle(color: Colors.white70, fontSize: 18),
@@ -138,178 +121,27 @@ class HomeContent extends StatelessWidget {
                 const SizedBox(height: 30),
 
                 // Search Bar
-                Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("Search feature coming soon!"),
-                        ),
-                      );
-                    },
-                    borderRadius: BorderRadius.circular(16),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 14,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withAlpha((255 * 0.15).round()),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: Colors.white.withAlpha((255 * 0.2).round()),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.search, color: Colors.white70),
-                          const SizedBox(width: 12),
-                          Text(
-                            'Find venues, communities...',
-                            style: TextStyle(
-                              color: Colors.white.withAlpha(
-                                (255 * 0.7).round(),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                _buildSearchBar(context),
 
                 const SizedBox(height: 40),
 
-                // Categories / Menu Grid
+                // Menu Grid
                 Text(
                   'Explore',
                   style: TextStyle(
-                    color: Colors.white.withAlpha((255 * 0.9).round()),
+                    color: Colors.white.withOpacity(0.9),
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 16),
-
-                GridView.count(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 1.1,
-                  children: [
-                    _buildFeatureCard(
-                      context,
-                      title: 'Communities',
-                      icon: Icons.groups_rounded,
-                      color1: const Color(0xFF42A5F5),
-                      color2: const Color(0xFF1E88E5),
-                      onTap: () {
-                        // Switch to Communities Tab (Index 1)
-                        final state = context
-                            .findAncestorStateOfType<_MyHomePageState>();
-                        state?._onItemTapped(1);
-                      },
-                    ),
-                    _buildFeatureCard(
-                      context,
-                      title: 'Venues',
-                      icon: Icons.stadium_rounded,
-                      color1: const Color(0xFFFFEE58),
-                      color2: const Color(0xFFFBC02D),
-                      textColor: Colors.black87,
-                      onTap: () {
-                        // Switch to Venues Tab (Index 2)
-                        final state = context
-                            .findAncestorStateOfType<_MyHomePageState>();
-                        state?._onItemTapped(2);
-                      },
-                    ),
-                    _buildFeatureCard(
-                      context,
-                      title: 'Events',
-                      icon: Icons.emoji_events_rounded,
-                      color1: const Color(0xFFFFEE58),
-                      color2: const Color(0xFFFBC02D),
-                      textColor: Colors.black87,
-                      onTap: () {
-                        // Switch to Events Tab (Index 3)
-                        final state = context
-                            .findAncestorStateOfType<_MyHomePageState>();
-                        state?._onItemTapped(3);
-                      },
-                    ),
-                    _buildFeatureCard(
-                      context,
-                      title: 'Forum',
-                      icon: Icons.forum_rounded,
-                      color1: const Color(0xFF42A5F5),
-                      color2: const Color(0xFF1E88E5),
-                      onTap: () {
-                        // Switch to Forum Tab (Index 4)
-                        final state = context
-                            .findAncestorStateOfType<_MyHomePageState>();
-                        state?._onItemTapped(4);
-                      },
-                    ),
-                  ],
-                ),
+                _buildGridMenu(context),
 
                 const SizedBox(height: 30),
 
-                // Bottom Banner / Activity
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withAlpha((255 * 0.1).round()),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: Colors.white.withAlpha((255 * 0.1).round()),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withAlpha((255 * 0.2).round()),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.notifications_active,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Don\'t miss out!',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Check upcoming events near you.',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                // Bottom Banner
+                _buildBottomBanner(),
+                
                 const SizedBox(height: 30),
               ],
             ),
@@ -317,6 +149,148 @@ class HomeContent extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  // --- Helper Methods to keep build() clean ---
+
+  Widget _buildDecorativeCircle(double size, double opacity) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white.withOpacity(opacity),
+      ),
+    );
+  }
+
+  Widget _buildSearchBar(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Search feature coming soon!")),
+          );
+        },
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.white.withOpacity(0.2)),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.search, color: Colors.white70),
+              const SizedBox(width: 12),
+              Text(
+                'Find venues, communities...',
+                style: TextStyle(color: Colors.white.withOpacity(0.7)),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGridMenu(BuildContext context) {
+    return GridView.count(
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      crossAxisCount: 2,
+      crossAxisSpacing: 16,
+      mainAxisSpacing: 16,
+      childAspectRatio: 1.1,
+      children: [
+        _buildFeatureCard(
+          context,
+          title: 'Communities',
+          icon: Icons.groups_rounded,
+          color1: const Color(0xFF42A5F5),
+          color2: const Color(0xFF1E88E5),
+          onTap: () => _navigateToTab(context, 1),
+        ),
+        _buildFeatureCard(
+          context,
+          title: 'Venues',
+          icon: Icons.stadium_rounded,
+          color1: const Color(0xFFFFEE58),
+          color2: const Color(0xFFFBC02D),
+          textColor: Colors.black87,
+          onTap: () => _navigateToTab(context, 2),
+        ),
+        _buildFeatureCard(
+          context,
+          title: 'Events',
+          icon: Icons.emoji_events_rounded,
+          color1: const Color(0xFFFFEE58),
+          color2: const Color(0xFFFBC02D),
+          textColor: Colors.black87,
+          onTap: () => _navigateToTab(context, 3),
+        ),
+        _buildFeatureCard(
+          context,
+          title: 'Forum',
+          icon: Icons.forum_rounded,
+          color1: const Color(0xFF42A5F5),
+          color2: const Color(0xFF1E88E5),
+          onTap: () => _navigateToTab(context, 4),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBottomBanner() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.notifications_active, color: Colors.white),
+          ),
+          const SizedBox(width: 16),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Don\'t miss out!',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'Check upcoming events near you.',
+                  style: TextStyle(color: Colors.white70, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Helper to switch tabs from the Grid
+  void _navigateToTab(BuildContext context, int index) {
+    context.findAncestorStateOfType<_MyHomePageState>()?._onItemTapped(index);
   }
 
   Widget _buildFeatureCard(
@@ -343,7 +317,7 @@ class HomeContent extends StatelessWidget {
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withAlpha((255 * 0.15).round()),
+                color: Colors.black.withOpacity(0.15),
                 blurRadius: 10,
                 offset: const Offset(0, 5),
               ),
@@ -355,7 +329,7 @@ class HomeContent extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.white.withAlpha((255 * 0.2).round()),
+                  color: Colors.white.withOpacity(0.2),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(icon, size: 32, color: textColor),
@@ -377,7 +351,7 @@ class HomeContent extends StatelessWidget {
   }
 }
 
-// 2. Placeholder Page for other tabs
+// 3. Placeholder Page for other tabs
 class PlaceholderPage extends StatelessWidget {
   final String title;
   final IconData icon;
@@ -387,8 +361,7 @@ class PlaceholderPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          Colors.white, // Ensure other pages have a clear background
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           title,

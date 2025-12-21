@@ -1,42 +1,81 @@
 import 'package:flutter/material.dart';
+
 import 'package:enerlink_mobile/screens/menu.dart';
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+
+import 'package:provider/provider.dart';
+
+
+
 Future<void> main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
+
+
+
+  // Try to load .env file, but don't fail if it doesn't exist
+
+  try {
+
+    await dotenv.load(fileName: ".env");
+
+  } catch (e) {
+
+    // .env file not found or error loading, continue without it
+
+    print('Warning: Could not load .env file: $e');
+
+  }
+
+
+
   runApp(const MyApp());
+
 }
+
+
 
 class MyApp extends StatelessWidget {
+
   const MyApp({super.key});
 
+
+
   // This widget is the root of your application.
+
   @override
+
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Enerlink',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSwatch(
-          primarySwatch: Colors.blue,
-        ).copyWith(secondary: Colors.blueAccent[400]),
+
+    return Provider(
+
+      create: (_) {
+
+        CookieRequest request = CookieRequest();
+
+        return request;
+
+      },
+
+      child: MaterialApp(
+
+        title: 'Enerlink',
+
+        theme: ThemeData(
+
+          colorScheme: ColorScheme.fromSwatch(
+
+            primarySwatch: Colors.blue,
+
+          ).copyWith(secondary: Colors.blueAccent[400]),
+
+        ),
+
+        home: const MyHomePage(),
+
       ),
-      home: const MyHomePage(),
-    );
-  }
-}
+
+    );  }}
