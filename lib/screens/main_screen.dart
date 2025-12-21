@@ -46,12 +46,7 @@ class _MainScreenMobileState extends State<MainScreenMobile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // No AppBar or Drawer anymore as requested for a cleaner, modern look
-      // extendBodyBehindAppBar: _selectedIndex == 0, // No AppBar, so no need to extend body
-
-      // This is the "Body" that changes based on bottom nav selection
       body: _pages[_selectedIndex],
-
       bottomNavigationBar: BottomNavbar(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
@@ -109,6 +104,62 @@ class _HomeContentState extends State<HomeContent> {
     }
   }
 
+  Widget _buildDecorativeCircle(double size, double opacity) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white.withAlpha((255 * opacity).round()),
+      ),
+    );
+  }
+
+  Widget _buildBottomBanner() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white.withAlpha((255 * 0.1).round()),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withAlpha((255 * 0.1).round())),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white.withAlpha((255 * 0.2).round()),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.notifications_active, color: Colors.white),
+          ),
+          const SizedBox(width: 16),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Don\'t miss out!',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'Check upcoming events near you.',
+                  style: TextStyle(color: Colors.white70, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Get display name or default
@@ -130,30 +181,17 @@ class _HomeContentState extends State<HomeContent> {
             ),
           ),
         ),
-        // Decorative Circles
+        
+        // Decorative Circles (Refactored for cleaner code)
         Positioned(
           top: -100,
           right: -100,
-          child: Container(
-            width: 300,
-            height: 300,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withAlpha((255 * 0.1).round()),
-            ),
-          ),
+          child: _buildDecorativeCircle(300, 0.1),
         ),
         Positioned(
           bottom: 50,
           left: -50,
-          child: Container(
-            width: 200,
-            height: 200,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withAlpha((255 * 0.05).round()),
-            ),
-          ),
+          child: _buildDecorativeCircle(200, 0.05),
         ),
 
         // 2. Main Content
@@ -163,7 +201,6 @@ class _HomeContentState extends State<HomeContent> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // SizedBox to push content down a bit, compensating for removed AppBar
                 const SizedBox(height: 30),
                 
                 // Welcome Text
@@ -253,7 +290,7 @@ class _HomeContentState extends State<HomeContent> {
                   const SizedBox(height: 30),
                 ],
 
-                // Categories / Menu Grid
+                // Menu Grid
                 Text(
                   'Explore',
                   style: TextStyle(
@@ -331,57 +368,9 @@ class _HomeContentState extends State<HomeContent> {
 
                 const SizedBox(height: 30),
 
-                // Bottom Banner / Activity
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withAlpha((255 * 0.1).round()),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: Colors.white.withAlpha((255 * 0.1).round()),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withAlpha((255 * 0.2).round()),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.notifications_active,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Don\'t miss out!',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Check upcoming events near you.',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                // Bottom Banner
+                _buildBottomBanner(),
+                
                 const SizedBox(height: 30),
               ],
             ),
@@ -566,7 +555,7 @@ class _HomeContentState extends State<HomeContent> {
   }
 }
 
-// 2. Placeholder Page for other tabs
+// 3. Placeholder Page for other tabs
 class PlaceholderPage extends StatelessWidget {
   final String title;
   final IconData icon;
@@ -576,8 +565,7 @@ class PlaceholderPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          Colors.white, // Ensure other pages have a clear background
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           title,
