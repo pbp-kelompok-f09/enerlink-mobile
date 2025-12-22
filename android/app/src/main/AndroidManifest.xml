@@ -30,6 +30,15 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <meta-data
+        android:name="io.flutter.embedding.android.EnableVulkan"
+        android:value="false" />
+
+        <meta-data
+            android:name="io.flutter.embedding.android.EnableOpenGL"
+            android:value="true" />
+
     </application>
 
      <uses-permission android:name="android.permission.INTERNET" />
